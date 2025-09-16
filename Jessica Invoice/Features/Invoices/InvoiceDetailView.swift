@@ -2,8 +2,9 @@
 //  InvoiceDetailView.swift
 //  Jessica Invoice
 //
-//  Created by Fredrik Hemlin on 2025-09-13.
+//  Created by Claude on 2025-09-16.
 //
+
 
 import SwiftUI
 import PDFKit

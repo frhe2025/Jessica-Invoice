@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Jessica Invoice
 //
-//  Created by Fredrik Hemlin on 2025-09-13.
+//  Created by Claude on 2025-09-16.
 //
 
 import SwiftUI
@@ -12,12 +12,13 @@ struct ContentView: View {
         TabView {
             InvoiceView()
                 .tabItem {
-                    Label("Faktura", systemImage: "doc.plaintext")
+                    Label("Faktura", systemImage: "doc.text.fill")
                 }
+                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
 
             ProductsView()
                 .tabItem {
-                    Label("Produkter", systemImage: "cart")
+                    Label("Produkter", systemImage: "cart.fill")
                 }
 
             HistoryView()
@@ -27,9 +28,11 @@ struct ContentView: View {
 
             SettingsView()
                 .tabItem {
-                    Label("Inställningar", systemImage: "gearshape")
+                    Label("Inställningar", systemImage: "gearshape.fill")
                 }
         }
+        .tint(.blue)
+        .preferredColorScheme(.light)
     }
 }
 
