@@ -1,189 +1,182 @@
 //
 //  GlassCard.swift
 //  Jessica Invoice
-//
-//  Created by Claude on 2025-09-16.
-//
-
-
-//
-//  GlassCard.swift
-//  Jessica Invoice
-//
-//  Created by Fredrik Hemlin on 2025-09-13.
+//  🔧 FIXED - Generic parameter issues resolved
 //
 
 import SwiftUI
 
 struct GlassCard<Content: View>: View {
     let content: Content
-    let cornerRadius: CGFloat
-    let shadowRadius: CGFloat
-    let shadowOffset: CGSize
-    let strokeWidth: CGFloat
+    let style: CardStyle
     
-    init(
-        cornerRadius: CGFloat = 16,
-        shadowRadius: CGFloat = 10,
-        shadowOffset: CGSize = CGSize(width: 0, height: 4),
-        strokeWidth: CGFloat = 1,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.cornerRadius = cornerRadius
-        self.shadowRadius = shadowRadius
-        self.shadowOffset = shadowOffset
-        self.strokeWidth = strokeWidth
-        self.content = content()
-    }
+    @Environment(\.colorScheme) var colorScheme
     
-    var body: some View {
-        content
-            .background(
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(.ultraThinMaterial)
-                    .stroke(.white.opacity(0.2), lineWidth: strokeWidth)
-                    .shadow(
-                        color: .black.opacity(0.1), 
-                        radius: shadowRadius, 
-                        x: shadowOffset.width, 
-                        y: shadowOffset.height
-                    )
-            )
-    }
-}
-
-// MARK: - Glass Card Variants
-extension GlassCard {
-    static func compact<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        GlassCard(
-            cornerRadius: 12,
-            shadowRadius: 6,
-            shadowOffset: CGSize(width: 0, height: 2),
-            content: content
-        )
-    }
-    
-    static func prominent<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        GlassCard(
-            cornerRadius: 20,
-            shadowRadius: 15,
-            shadowOffset: CGSize(width: 0, height: 8),
-            strokeWidth: 1.5,
-            content: content
-        )
-    }
-}
-
-// MARK: - Glass Section
-struct GlassSection<Header: View, Content: View>: View {
-    let header: Header
-    let content: Content
-    
-    init(
-        @ViewBuilder header: () -> Header,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.header = header()
-        self.content = content()
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            header
-            
-            GlassCard {
-                content
-                    .padding(20)
+    enum CardStyle {
+        case compact
+        case prominent
+        case floating
+        
+        var padding: EdgeInsets {
+            switch self {
+            case .compact: return EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+            case .prominent: return EdgeInsets(top: 20, leading: 24, bottom: 20, trailing: 24)
+            case .floating: return EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20)
+            }
+        }
+        
+        var cornerRadius: CGFloat {
+            switch self {
+            case .compact: return 12
+            case .prominent: return 16
+            case .floating: return 20
+            }
+        }
+        
+        var shadowRadius: CGFloat {
+            switch self {
+            case .compact: return 8
+            case .prominent: return 16
+            case .floating: return 24
             }
         }
     }
-}
-
-// MARK: - Glass List Item
-struct GlassListItem<Content: View>: View {
-    let content: Content
-    let isFirst: Bool
-    let isLast: Bool
     
-    init(
-        isFirst: Bool = false,
-        isLast: Bool = false,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.isFirst = isFirst
-        self.isLast = isLast
+    init(style: CardStyle = .compact, @ViewBuilder content: () -> Content) {
+        self.style = style
         self.content = content()
     }
     
     var body: some View {
         content
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(
-                Rectangle()
-                    .fill(.ultraThinMaterial)
-                    .cornerRadius(isFirst ? 16 : 0, corners: [.topLeft, .topRight])
-                    .cornerRadius(isLast ? 16 : 0, corners: [.bottomLeft, .bottomRight])
+            .padding(style.padding)
+            .background(cardBackground)
+            .cornerRadius(style.cornerRadius)
+            .shadow(
+                color: shadowColor,
+                radius: style.shadowRadius,
+                x: 0,
+                y: style.shadowRadius / 3
             )
+    }
+    
+    // MARK: - Static Factory Methods (FIXED - Proper generic syntax)
+    static func compact<T: View>(@ViewBuilder content: () -> T) -> some View {
+        GlassCard<T>(style: .compact, content: content)
+    }
+    
+    static func prominent<T: View>(@ViewBuilder content: () -> T) -> some View {
+        GlassCard<T>(style: .prominent, content: content)
+    }
+    
+    static func floating<T: View>(@ViewBuilder content: () -> T) -> some View {
+        GlassCard<T>(style: .floating, content: content)
+    }
+    
+    // MARK: - Computed Properties
+    private var cardBackground: some View {
+        RoundedRectangle(cornerRadius: style.cornerRadius)
+            .fill(glassMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: style.cornerRadius)
+                    .stroke(borderGradient, lineWidth: 1)
+            )
+    }
+    
+    private var glassMaterial: Material {
+        switch style {
+        case .compact:
+            return colorScheme == .dark ? .ultraThinMaterial : .thinMaterial
+        case .prominent:
+            return colorScheme == .dark ? .thinMaterial : .regularMaterial
+        case .floating:
+            return colorScheme == .dark ? .regularMaterial : .thickMaterial
+        }
+    }
+    
+    private var borderGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                .white.opacity(colorScheme == .dark ? 0.3 : 0.6),
+                .white.opacity(colorScheme == .dark ? 0.1 : 0.3),
+                .clear
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+    
+    private var shadowColor: Color {
+        colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.1)
     }
 }
 
-// MARK: - Corner Radius Extension
+// MARK: - Convenience Initializers
 extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
+    func glassCard(style: GlassCard<Self>.CardStyle = .compact) -> some View {
+        GlassCard(style: style) {
+            self
+        }
     }
 }
 
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(
-            roundedRect: rect,
-            byRoundingCorners: corners,
-            cornerRadii: CGSize(width: radius, height: radius)
-        )
-        return Path(path.cgPath)
-    }
-}
-
+// MARK: - Preview
 #Preview {
-    ScrollView {
-        VStack(spacing: 20) {
-            // Standard glass card
-            GlassCard {
-                VStack {
-                    Text("Standard Glass Card")
-                        .font(.headline)
-                    Text("This is a standard glass card with default styling")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(20)
-            }
-            
-            // Compact glass card
-            GlassCard.compact {
-                Text("Compact Glass Card")
-                    .padding(12)
-            }
-            
-            // Prominent glass card
-            GlassCard.prominent {
-                VStack {
-                    Image(systemName: "star.fill")
-                        .font(.largeTitle)
-                        .foregroundStyle(.yellow)
-                    Text("Prominent Glass Card")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                }
-                .padding(24)
+    VStack(spacing: 24) {
+        GlassCard.compact {
+            VStack {
+                Text("Compact Card")
+                    .font(.headline)
+                Text("Simple and clean design")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
-        .padding()
+        
+        GlassCard.prominent {
+            VStack(spacing: 12) {
+                Circle()
+                    .fill(.blue.opacity(0.2))
+                    .frame(width: 44, height: 44)
+                    .overlay(
+                        Image(systemName: "doc.text")
+                            .foregroundStyle(.blue)
+                    )
+                
+                Text("Prominent Card")
+                    .font(.title3.weight(.semibold))
+                Text("More prominent with larger padding")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        
+        GlassCard.floating {
+            VStack(spacing: 16) {
+                HStack {
+                    Image(systemName: "star.fill")
+                        .foregroundStyle(.yellow)
+                    Text("Floating Card")
+                        .font(.headline)
+                    Spacer()
+                }
+                
+                Text("Enhanced shadow and corner radius")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                
+                HStack {
+                    Button("Action") {}
+                        .buttonStyle(.borderedProminent)
+                    
+                    Spacer()
+                    
+                    Button("Cancel") {}
+                        .buttonStyle(.bordered)
+                }
+            }
+        }
     }
-    .background(.blue.opacity(0.1))
+    .padding()
+    .background(Color.gray.opacity(0.1))
 }

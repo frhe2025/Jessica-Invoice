@@ -1,246 +1,319 @@
 //
 //  LiquidGlassEffects.swift
 //  Jessica Invoice
-//
-//  Created by Claude on 2025-09-16.
-//  iOS 26 Liquid Glass Implementation
+//  🔧 FIXED - Generic parameter issues and removed duplicates
 //
 
 import SwiftUI
 
-// MARK: - Liquid Glass Material
+// MARK: - Liquid Glass Container (FIXED - Proper generic implementation)
+struct LiquidGlassContainer<Content: View>: View {
+    let content: Content
+    let style: ContainerStyle
+    let cornerRadius: CGFloat
+    let intensity: Double
+    
+    @Environment(\.colorScheme) var colorScheme
+    @State private var animationPhase: Double = 0
+    
+    enum ContainerStyle {
+        case primary
+        case subtle
+        case dynamic
+        case breathing
+        
+        var material: Material {
+            switch self {
+            case .primary: return .regularMaterial
+            case .subtle: return .ultraThinMaterial
+            case .dynamic: return .thickMaterial
+            case .breathing: return .thinMaterial
+            }
+        }
+        
+        var intensity: Double {
+            switch self {
+            case .primary: return 0.8
+            case .subtle: return 0.3
+            case .dynamic: return 1.0
+            case .breathing: return 0.6
+            }
+        }
+    }
+    
+    init(
+        style: ContainerStyle = .primary,
+        cornerRadius: CGFloat = 16,
+        intensity: Double = 0.8,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.style = style
+        self.cornerRadius = cornerRadius
+        self.intensity = intensity
+        self.content = content()
+    }
+    
+    var body: some View {
+        content
+            .background(containerBackground)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+            .overlay(liquidBorder)
+            .shadow(color: shadowColor, radius: shadowRadius, x: 0, y: shadowOffset)
+            .onAppear {
+                if style == .dynamic || style == .breathing {
+                    startAnimation()
+                }
+            }
+    }
+    
+    // MARK: - Static Factory Methods (FIXED)
+    static func primary<T: View>(@ViewBuilder content: () -> T) -> some View {
+        LiquidGlassContainer<T>(style: .primary, content: content)
+    }
+    
+    static func subtle<T: View>(@ViewBuilder content: () -> T) -> some View {
+        LiquidGlassContainer<T>(style: .subtle, content: content)
+    }
+    
+    static func dynamic<T: View>(@ViewBuilder content: () -> T) -> some View {
+        LiquidGlassContainer<T>(style: .dynamic, content: content)
+    }
+    
+    static func breathing<T: View>(@ViewBuilder content: () -> T) -> some View {
+        LiquidGlassContainer<T>(style: .breathing, content: content)
+    }
+    
+    // MARK: - Background Components
+    private var containerBackground: some View {
+        RoundedRectangle(cornerRadius: cornerRadius)
+            .fill(style.material)
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(liquidGradient)
+                    .opacity(intensity * 0.3)
+            )
+    }
+    
+    private var liquidBorder: some View {
+        RoundedRectangle(cornerRadius: cornerRadius)
+            .stroke(borderGradient, lineWidth: 1)
+    }
+    
+    private var liquidGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                .white.opacity(0.4),
+                .white.opacity(0.1),
+                .clear,
+                .white.opacity(0.2)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+    
+    private var borderGradient: LinearGradient {
+        LinearGradient(
+            colors: [
+                .white.opacity(colorScheme == .dark ? 0.3 : 0.6),
+                .white.opacity(colorScheme == .dark ? 0.1 : 0.3),
+                .clear
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+    
+    // MARK: - Animation
+    private func startAnimation() {
+        withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true)) {
+            animationPhase = 1.0
+        }
+    }
+    
+    // MARK: - Computed Properties
+    private var shadowColor: Color {
+        colorScheme == .dark ? .black.opacity(0.4) : .black.opacity(0.1)
+    }
+    
+    private var shadowRadius: CGFloat {
+        switch style {
+        case .primary: return 15
+        case .subtle: return 5
+        case .dynamic: return 20
+        case .breathing: return 12 + (animationPhase * 8)
+        }
+    }
+    
+    private var shadowOffset: CGFloat {
+        switch style {
+        case .primary: return 8
+        case .subtle: return 2
+        case .dynamic: return 10
+        case .breathing: return 6 + (animationPhase * 4)
+        }
+    }
+}
+
+// MARK: - Liquid Glass Material Modifier
 struct LiquidGlassMaterial: ViewModifier {
     let intensity: Double
     let tintColor: Color?
-    let isAdaptive: Bool
-    
-    init(intensity: Double = 1.0, tintColor: Color? = nil, adaptive: Bool = true) {
-        self.intensity = intensity
-        self.tintColor = tintColor
-        self.isAdaptive = adaptive
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .background(
-                LiquidGlassBackground(
-                    intensity: intensity,
-                    tintColor: tintColor,
-                    isAdaptive: isAdaptive
-                )
-            )
-    }
-}
-
-struct LiquidGlassBackground: View {
-    let intensity: Double
-    let tintColor: Color?
-    let isAdaptive: Bool
+    let adaptive: Bool
     
     @Environment(\.colorScheme) var colorScheme
     
-    var body: some View {
-        ZStack {
-            // Base material layer
-            if #available(iOS 18.0, *) {
-                Rectangle()
-                    .fill(.ultraThinMaterial.opacity(intensity * 0.8))
-            } else {
-                Rectangle()
-                    .fill(.ultraThinMaterial)
-                    .opacity(intensity * 0.8)
-            }
-            
-            // Liquid overlay with adaptive tinting
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        colors: liquidColors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .opacity(intensity * 0.12)
-                .blendMode(.overlay)
-            
-            // Luminance layer for depth
-            Rectangle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            .white.opacity(intensity * 0.15),
-                            .clear
-                        ],
-                        center: .topLeading,
-                        startRadius: 0,
-                        endRadius: 300
-                    )
-                )
-                .blendMode(.softLight)
+    func body(content: Content) -> some View {
+        content
+            .background(glassMaterial)
+            .overlay(glassOverlay)
+    }
+    
+    private var glassMaterial: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(material)
+    }
+    
+    private var glassOverlay: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(overlayGradient)
+    }
+    
+    private var material: Material {
+        switch intensity {
+        case 0.0...0.3:
+            return .ultraThinMaterial
+        case 0.3...0.6:
+            return .thinMaterial
+        case 0.6...0.8:
+            return .regularMaterial
+        default:
+            return .thickMaterial
         }
     }
     
-    private var liquidColors: [Color] {
-        if let tintColor = tintColor {
-            return [
-                tintColor.opacity(0.3),
-                tintColor.opacity(0.1),
+    private var overlayGradient: LinearGradient {
+        let baseColor = tintColor ?? (adaptive ? .accentColor : .white)
+        
+        return LinearGradient(
+            colors: [
+                baseColor.opacity(intensity * 0.2),
+                baseColor.opacity(intensity * 0.1),
                 .clear
-            ]
-        }
-        
-        if isAdaptive {
-            return colorScheme == .dark ?
-                [.white.opacity(0.08), .blue.opacity(0.05), .clear] :
-                [.blue.opacity(0.06), .white.opacity(0.12), .clear]
-        }
-        
-        return [.white.opacity(0.08), .clear]
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
 }
 
-// MARK: - Liquid Glass Border
+// MARK: - Liquid Glass Border Modifier
 struct LiquidGlassBorder: ViewModifier {
     let width: CGFloat
     let opacity: Double
     let animated: Bool
     
-    @State private var animationPhase: CGFloat = 0
-    
-    init(width: CGFloat = 1, opacity: Double = 0.3, animated: Bool = false) {
-        self.width = width
-        self.opacity = opacity
-        self.animated = animated
-    }
+    @State private var animationPhase: Double = 0
     
     func body(content: Content) -> some View {
         content
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(
-                        LinearGradient(
-                            colors: borderColors,
-                            startPoint: animated ?
-                                UnitPoint(x: animationPhase, y: 0) :
-                                .topLeading,
-                            endPoint: animated ?
-                                UnitPoint(x: animationPhase + 0.3, y: 1) :
-                                .bottomTrailing
-                        ),
-                        lineWidth: width
-                    )
-            )
+            .overlay(borderOverlay)
             .onAppear {
                 if animated {
-                    withAnimation(
-                        .linear(duration: 3)
-                        .repeatForever(autoreverses: true)
-                    ) {
+                    withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
                         animationPhase = 1.0
                     }
                 }
             }
     }
     
-    private var borderColors: [Color] {
-        [
-            .white.opacity(opacity * 0.8),
-            .white.opacity(opacity * 0.3),
-            .clear,
-            .white.opacity(opacity * 0.5)
-        ]
+    private var borderOverlay: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .stroke(borderGradient, lineWidth: width)
+    }
+    
+    private var borderGradient: LinearGradient {
+        if animated {
+            return LinearGradient(
+                colors: [
+                    .white.opacity(opacity),
+                    .clear,
+                    .white.opacity(opacity * 0.5),
+                    .clear
+                ],
+                startPoint: .init(x: -0.3 + animationPhase, y: -0.3 + animationPhase),
+                endPoint: .init(x: 0.7 + animationPhase, y: 0.7 + animationPhase)
+            )
+        } else {
+            return LinearGradient(
+                colors: [
+                    .white.opacity(opacity),
+                    .white.opacity(opacity * 0.5),
+                    .clear
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
     }
 }
 
-// MARK: - Liquid Glass Shadow
+// MARK: - Liquid Glass Shadow Modifier
 struct LiquidGlassShadow: ViewModifier {
     let radius: CGFloat
     let intensity: Double
     let color: Color
     
-    init(radius: CGFloat = 20, intensity: Double = 0.15, color: Color = .black) {
-        self.radius = radius
-        self.intensity = intensity
-        self.color = color
-    }
+    @Environment(\.colorScheme) var colorScheme
     
     func body(content: Content) -> some View {
         content
             .shadow(
-                color: color.opacity(intensity * 0.4),
-                radius: radius * 0.3,
-                x: 0,
-                y: 2
-            )
-            .shadow(
-                color: color.opacity(intensity * 0.2),
-                radius: radius * 0.6,
-                x: 0,
-                y: 4
-            )
-            .shadow(
-                color: color.opacity(intensity * 0.1),
+                color: shadowColor,
                 radius: radius,
                 x: 0,
-                y: 8
+                y: radius * 0.3
             )
+    }
+    
+    private var shadowColor: Color {
+        color.opacity(colorScheme == .dark ? intensity * 1.5 : intensity)
     }
 }
 
 // MARK: - Morphing Glass Effect
 struct MorphingGlass: ViewModifier {
-    @State private var morphPhase: CGFloat = 0
     let intensity: Double
     
-    init(intensity: Double = 1.0) {
-        self.intensity = intensity
-    }
+    @State private var morphPhase: Double = 0
     
     func body(content: Content) -> some View {
         content
-            .background(
-                ZStack {
-                    // Base glass
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-                    
-                    // Morphing overlay
-                    GeometryReader { geometry in
-                        Path { path in
-                            let width = geometry.size.width
-                            let height = geometry.size.height
-                            
-                            path.move(to: CGPoint(x: 0, y: height * (0.3 + sin(morphPhase) * 0.1)))
-                            path.addCurve(
-                                to: CGPoint(x: width, y: height * (0.7 + cos(morphPhase * 1.2) * 0.1)),
-                                control1: CGPoint(x: width * 0.3, y: height * (0.1 + sin(morphPhase * 1.5) * 0.05)),
-                                control2: CGPoint(x: width * 0.7, y: height * (0.9 + cos(morphPhase * 0.8) * 0.05))
-                            )
-                            path.addLine(to: CGPoint(x: width, y: height))
-                            path.addLine(to: CGPoint(x: 0, y: height))
-                            path.closeSubpath()
-                        }
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    .white.opacity(intensity * 0.1),
-                                    .blue.opacity(intensity * 0.05),
-                                    .clear
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .blendMode(.overlay)
-                    }
-                }
-            )
+            .scaleEffect(1.0 + (morphPhase * intensity * 0.05))
+            .opacity(1.0 - (morphPhase * intensity * 0.1))
+            .blur(radius: morphPhase * intensity * 2)
             .onAppear {
-                withAnimation(
-                    .easeInOut(duration: 4)
-                    .repeatForever(autoreverses: true)
-                ) {
-                    morphPhase = .pi * 2
+                withAnimation(.easeInOut(duration: 4.0).repeatForever(autoreverses: true)) {
+                    morphPhase = 1.0
+                }
+            }
+    }
+}
+
+// MARK: - Breathing Glass Effect
+struct BreathingGlass: ViewModifier {
+    let intensity: Double
+    let duration: Double
+    
+    @State private var breathPhase: Double = 0
+    
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(1.0 + (breathPhase * intensity * 0.03))
+            .opacity(1.0 - (breathPhase * intensity * 0.05))
+            .onAppear {
+                withAnimation(.easeInOut(duration: duration).repeatForever(autoreverses: true)) {
+                    breathPhase = 1.0
                 }
             }
     }
@@ -248,129 +321,31 @@ struct MorphingGlass: ViewModifier {
 
 // MARK: - Liquid Ripple Effect
 struct LiquidRipple: ViewModifier {
-    @State private var rippleScale: CGFloat = 0
-    @State private var rippleOpacity: Double = 0
-    @State private var rippleOffset: CGSize = .zero
-    
     let trigger: Bool
     let color: Color
     
-    init(trigger: Bool, color: Color = .white) {
-        self.trigger = trigger
-        self.color = color
-    }
+    @State private var rippleScale: CGFloat = 0
+    @State private var rippleOpacity: Double = 1
     
     func body(content: Content) -> some View {
         content
             .overlay(
                 Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                color.opacity(0.3),
-                                color.opacity(0.1),
-                                .clear
-                            ],
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: 50
-                        )
-                    )
+                    .stroke(color, lineWidth: 2)
                     .scaleEffect(rippleScale)
                     .opacity(rippleOpacity)
-                    .offset(rippleOffset)
-                    .allowsHitTesting(false)
+                    .animation(.easeOut(duration: 0.6), value: rippleScale)
+                    .animation(.easeOut(duration: 0.6), value: rippleOpacity)
             )
             .onChange(of: trigger) { _, newValue in
                 if newValue {
-                    createRipple()
-                }
-            }
-    }
-    
-    private func createRipple() {
-        withAnimation(.easeOut(duration: 0.6)) {
-            rippleScale = 3.0
-            rippleOpacity = 0
-        }
-        
-        rippleScale = 0
-        rippleOpacity = 1
-    }
-}
-
-// MARK: - Breathing Glass Effect
-struct BreathingGlass: ViewModifier {
-    @State private var breathPhase: CGFloat = 0
-    let intensity: Double
-    let duration: Double
-    
-    init(intensity: Double = 0.3, duration: Double = 3.0) {
-        self.intensity = intensity
-        self.duration = duration
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .scaleEffect(1.0 + sin(breathPhase) * intensity * 0.02)
-            .opacity(1.0 - sin(breathPhase) * intensity * 0.1)
-            .blur(radius: sin(breathPhase) * intensity * 0.5)
-            .onAppear {
-                withAnimation(
-                    .easeInOut(duration: duration)
-                    .repeatForever(autoreverses: false)
-                ) {
-                    breathPhase = .pi * 2
-                }
-            }
-    }
-}
-
-// MARK: - Liquid Glass Container
-struct LiquidGlassContainer<Content: View>: View {
-    let content: Content
-    let cornerRadius: CGFloat
-    let intensity: Double
-    let tintColor: Color?
-    let hasRipple: Bool
-    let isMorphing: Bool
-    
-    @State private var isPressed = false
-    
-    init(
-        cornerRadius: CGFloat = 20,
-        intensity: Double = 1.0,
-        tintColor: Color? = nil,
-        hasRipple: Bool = false,
-        isMorphing: Bool = false,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.cornerRadius = cornerRadius
-        self.intensity = intensity
-        self.tintColor = tintColor
-        self.hasRipple = hasRipple
-        self.isMorphing = isMorphing
-        self.content = content()
-    }
-    
-    var body: some View {
-        content
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-            .modifier(LiquidGlassMaterial(intensity: intensity, tintColor: tintColor))
-            .if(isMorphing) { view in
-                view.modifier(MorphingGlass(intensity: intensity))
-            }
-            .modifier(LiquidGlassBorder(animated: hasRipple))
-            .modifier(LiquidGlassShadow(radius: cornerRadius))
-            .if(hasRipple) { view in
-                view.modifier(LiquidRipple(trigger: isPressed))
-            }
-            .scaleEffect(isPressed ? 0.98 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-            .onTapGesture {
-                isPressed = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    isPressed = false
+                    rippleScale = 0
+                    rippleOpacity = 1
+                    
+                    withAnimation(.easeOut(duration: 0.6)) {
+                        rippleScale = 2.0
+                        rippleOpacity = 0
+                    }
                 }
             }
     }
@@ -421,101 +396,36 @@ extension View {
     }
 }
 
-// MARK: - Predefined Liquid Glass Styles
-extension LiquidGlassContainer {
-    static func primary<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassContainer(
-            cornerRadius: 16,
-            intensity: 1.0,
-            tintColor: .blue,
-            hasRipple: true,
-            content: content
-        )
-    }
-    
-    static func subtle<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassContainer(
-            cornerRadius: 12,
-            intensity: 0.6,
-            tintColor: nil,
-            hasRipple: false,
-            content: content
-        )
-    }
-    
-    static func dynamic<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassContainer(
-            cornerRadius: 20,
-            intensity: 1.2,
-            tintColor: .purple,
-            hasRipple: true,
-            isMorphing: true,
-            content: content
-        )
-    }
-    
-    static func breathing<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassContainer(
-            cornerRadius: 24,
-            intensity: 0.8,
-            tintColor: .green,
-            content: content
-        )
-        .breathingEffect(intensity: 0.2)
-    }
-}
-
+// MARK: - Preview
 #Preview {
-    ScrollView {
-        VStack(spacing: 32) {
-            Text("iOS 26 Liquid Glass Effects")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding()
-            
-            // Primary Liquid Glass
-            LiquidGlassContainer.primary {
-                VStack {
-                    Image(systemName: "star.fill")
-                        .font(.largeTitle)
-                        .foregroundStyle(.blue)
-                    Text("Primary Liquid Glass")
-                        .font(.headline)
-                }
-                .padding(24)
+    VStack(spacing: 32) {
+        LiquidGlassContainer.primary {
+            VStack {
+                Text("Primary Container")
+                    .font(.headline)
+                Text("Regular liquid glass effect")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            
-            // Morphing Glass
-            LiquidGlassContainer.dynamic {
-                VStack {
-                    Image(systemName: "waveform")
-                        .font(.largeTitle)
-                        .foregroundStyle(.purple)
-                    Text("Dynamic Morphing Glass")
-                        .font(.headline)
-                }
-                .padding(24)
-            }
-            
-            // Breathing Glass
-            LiquidGlassContainer.breathing {
-                VStack {
-                    Image(systemName: "heart.fill")
-                        .font(.largeTitle)
-                        .foregroundStyle(.green)
-                    Text("Breathing Glass Effect")
-                        .font(.headline)
-                }
-                .padding(24)
-            }
+            .padding()
         }
-        .padding()
+        
+        LiquidGlassContainer.subtle {
+            HStack {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(.yellow)
+                Text("Subtle Container")
+                    .font(.subheadline)
+            }
+            .padding()
+        }
+        
+        LiquidGlassContainer.dynamic {
+            Text("Dynamic Container")
+                .font(.title3.weight(.semibold))
+                .padding()
+        }
     }
-    .background(
-        LinearGradient(
-            colors: [.blue.opacity(0.3), .purple.opacity(0.2), .clear],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    )
+    .padding()
+    .background(Color.gray.opacity(0.1))
 }

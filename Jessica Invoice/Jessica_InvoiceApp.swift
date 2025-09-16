@@ -1,7 +1,7 @@
 //
 //  Jessica_InvoiceApp.swift
-//  📁 ERSÄTT BEFINTLIG FIL I ROOT LEVEL
-//  Enhanced iOS 26 App with Multi-Company Support
+//  Jessica Invoice
+//  🔧 FIXED - Removed duplicate ContentView declaration
 //
 
 import SwiftUI
@@ -21,6 +21,7 @@ struct Jessica_InvoiceApp: App {
                 if companyManager.isLoading {
                     LiquidLoadingView()
                 } else {
+                    // Use the ContentView from ContentView.swift - removed duplicate
                     ContentView()
                 }
             }
@@ -118,268 +119,51 @@ struct Jessica_InvoiceApp: App {
     }
 }
 
-//
-//  ContentView.swift
-//  📁 ERSÄTT BEFINTLIG FIL I ROOT LEVEL
-//  Enhanced iOS 26 Content View with Liquid Glass
-//
-
-struct ContentView: View {
-    @EnvironmentObject var companyManager: CompanyManager
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @State private var selectedTab: TabSelection = .invoice
-    
-    enum TabSelection: String, CaseIterable {
-        case invoice = "invoice"
-        case products = "products"
-        case history = "history"
-        case settings = "settings"
-        
-        var displayName: String {
-            switch self {
-            case .invoice: return "Faktura"
-            case .products: return "Produkter"
-            case .history: return "Historik"
-            case .settings: return "Inställningar"
-            }
-        }
-        
-        var icon: String {
-            switch self {
-            case .invoice: return "doc.text.fill"
-            case .products: return "cart.fill"
-            case .history: return "clock.arrow.circlepath"
-            case .settings: return "gearshape.fill"
-            }
-        }
-        
-        var selectedIcon: String {
-            switch self {
-            case .invoice: return "doc.text.fill"
-            case .products: return "cart.fill"
-            case .history: return "clock.arrow.circlepath.fill"
-            case .settings: return "gearshape.2.fill"
-            }
-        }
-        
-        var backgroundContext: ContextualLiquidBackground.BackgroundContext {
-            switch self {
-            case .invoice: return .invoice
-            case .products: return .products
-            case .history: return .history
-            case .settings: return .settings
-            }
-        }
-    }
-    
-    var body: some View {
-        ZStack {
-            // Main Content
-            TabView(selection: $selectedTab) {
-                InvoiceView()
-                    .tag(TabSelection.invoice)
-                
-                ProductsView()
-                    .tag(TabSelection.products)
-                
-                HistoryView()
-                    .tag(TabSelection.history)
-                
-                SettingsView()
-                    .tag(TabSelection.settings)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            
-            // Custom Tab Bar and Company Selector
-            VStack {
-                // Company Selector at top
-                if !companyManager.companies.isEmpty {
-                    companySelectorSection
-                }
-                
-                Spacer()
-                
-                // Custom Tab Bar at bottom
-                liquidTabBar
-            }
-        }
-        .ignoresSafeArea(.keyboard)
-        .preferredColorScheme(.light)
-        .onAppear {
-            setupAppearance()
-        }
-    }
-    
-    // MARK: - Company Selector Section
-    private var companySelectorSection: some View {
-        VStack(spacing: 0) {
-            CompanySelectorView()
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                .background(.ultraThinMaterial)
-            
-            Rectangle()
-                .fill(.quaternary.opacity(0.5))
-                .frame(height: 0.5)
-        }
-    }
-    
-    // MARK: - Liquid Tab Bar
-    private var liquidTabBar: some View {
-        VStack(spacing: 0) {
-            Rectangle()
-                .fill(.quaternary.opacity(0.5))
-                .frame(height: 0.5)
-            
-            HStack(spacing: 0) {
-                ForEach(TabSelection.allCases, id: \.self) { tab in
-                    liquidTabButton(for: tab)
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
-            .background(.ultraThinMaterial)
-        }
-    }
-    
-    private func liquidTabButton(for tab: TabSelection) -> some View {
-        Button {
-            selectTab(tab)
-        } label: {
-            VStack(spacing: 6) {
-                Image(systemName: selectedTab == tab ? tab.selectedIcon : tab.icon)
-                    .font(.system(size: 20))
-                    .foregroundStyle(selectedTab == tab ? .blue : .secondary)
-                    .scaleEffect(selectedTab == tab ? 1.1 : 1.0)
-                
-                Text(tab.displayName)
-                    .font(.caption)
-                    .fontWeight(selectedTab == tab ? .semibold : .medium)
-                    .foregroundStyle(selectedTab == tab ? .blue : .secondary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-        }
-        .buttonStyle(.plain)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: selectedTab)
-    }
-    
-    // MARK: - Helper Functions
-    private func selectTab(_ tab: TabSelection) {
-        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-        impactFeedback.impactOccurred()
-        
-        selectedTab = tab
-    }
-    
-    private func setupAppearance() {
-        // Configure navigation bar appearance
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundEffect = UIBlurEffect(style: .systemMaterial)
-        
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        
-        // Configure tab bar appearance (hidden since we use custom)
-        UITabBar.appearance().isHidden = true
-    }
-}
-
-//
-//  LiquidLoadingView.swift
-//  📁 PLACERA I: Components/LiquidGlass/
-//  iOS 26 Loading Screen
-//
-
+// MARK: - Loading View
 struct LiquidLoadingView: View {
-    @State private var animationPhase: CGFloat = 0
-    @State private var pulsePhase: CGFloat = 0
+    @State private var isAnimating = false
     
     var body: some View {
         ZStack {
-            // Animated liquid background
-            LiquidGlassBackground(
-                colors: [.blue, .cyan, .indigo],
-                intensity: 0.15,
-                isAnimated: true
-            )
+            AnimatedGradientBackground.dashboard
+                .ignoresSafeArea()
             
-            VStack(spacing: 32) {
-                // Animated logo
+            VStack(spacing: 24) {
+                // Liquid loading animation
                 ZStack {
-                    // Pulsing background circles
                     ForEach(0..<3, id: \.self) { index in
                         Circle()
-                            .stroke(
-                                LinearGradient(
-                                    colors: [.blue.opacity(0.3), .cyan.opacity(0.2)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 2
+                            .fill(.white.opacity(0.3))
+                            .frame(width: 20, height: 20)
+                            .offset(y: isAnimating ? -20 : 20)
+                            .animation(
+                                .easeInOut(duration: 0.8)
+                                .repeatForever(autoreverses: true)
+                                .delay(Double(index) * 0.2),
+                                value: isAnimating
                             )
-                            .frame(width: CGFloat(80 + index * 20), height: CGFloat(80 + index * 20))
-                            .scaleEffect(1.0 + sin(pulsePhase + Double(index) * 0.5) * 0.1)
-                            .opacity(0.7 - Double(index) * 0.2)
+                            .offset(x: CGFloat(index - 1) * 30)
                     }
-                    
-                    // Main icon
-                    Image(systemName: "doc.text.fill")
-                        .font(.system(size: 40, weight: .light))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.blue, .cyan],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .scaleEffect(1.0 + sin(animationPhase) * 0.05)
                 }
+                .frame(height: 60)
                 
-                // App name and loading text
-                VStack(spacing: 12) {
+                VStack(spacing: 8) {
                     Text("Jessica Invoice")
-                        .font(.largeTitle)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.primary)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(.white)
                     
-                    Text("Laddar dina företag...")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    
-                    // Loading indicator
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                        .scaleEffect(1.2)
+                    Text("Laddar...")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.8))
                 }
             }
         }
         .onAppear {
-            startAnimations()
-        }
-    }
-    
-    private func startAnimations() {
-        withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
-            animationPhase = .pi * 2
-        }
-        
-        withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: true)) {
-            pulsePhase = .pi
+            isAnimating = true
         }
     }
 }
 
-#Preview("Content View") {
-    ContentView()
-        .environmentObject(CompanyManager())
-        .environmentObject(InvoiceViewModel())
-        .environmentObject(ProductViewModel())
-        .environmentObject(SettingsViewModel())
-}
-
-#Preview("Loading View") {
+#Preview {
     LiquidLoadingView()
 }

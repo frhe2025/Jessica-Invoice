@@ -444,27 +444,28 @@ struct LiquidNavigationContainer<Content: View>: View {
     }
 }
 
+// Fix för LiquidNavigationBar.swift - @State i Preview
+// Ersätt denna rad i Preview:
+
+// FÖRE (orsakar warning):
+// @State var selectedTab = 0
+
+// EFTER (fixad version):
 #Preview {
-    @State var selectedTab = 0
+    @Previewable @State var selectedTab = 0
     
-    return LiquidNavigationContainer(
-        navigationBar: LiquidNavigationBar(
-            title: "Jessica Invoice",
-            subtitle: "Skapa fakturor",
-            leadingAction: .back {},
-            trailingActions: [.edit {}, .share {}],
-            tintColor: .blue
-        ),
-        tabBar: LiquidTabBar(
-            selectedTab: .constant(selectedTab),
-            tintColor: .blue,
-            tabs: [
-                TabItem(title: "Faktura", icon: "doc.text"),
-                TabItem(title: "Produkter", icon: "cart"),
-                TabItem(title: "Historik", icon: "clock.arrow.circlepath"),
-                TabItem(title: "Inställningar", icon: "gearshape")
-            ]
-        )
+    LiquidNavigationBar(
+        title: "Jessica Invoice",
+        selectedTab: $selectedTab,
+        tabs: [
+            TabItem(title: "Dashboard", icon: "house"),
+            TabItem(title: "Faktura", icon: "doc.text"),
+            TabItem(title: "Produkter", icon: "cart"),
+            TabItem(title: "Historik", icon: "clock"),
+            TabItem(title: "Inställningar", icon: "gearshape")
+        ]
+    )
+}
     ) {
         ScrollView {
             VStack(spacing: 20) {

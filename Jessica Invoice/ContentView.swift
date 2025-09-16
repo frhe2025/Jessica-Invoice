@@ -513,9 +513,9 @@ extension InvoiceViewModel {
 }
 
 struct CompanyReportData: Codable {
-    let company: Company
-    let dashboardData: DashboardData
-    let generatedAt: Date
+    let companyId: UUID
+    let companyName: String
+    let reportData: ReportDataDetails
 }
 
 struct InvoiceHistoryData: Codable {

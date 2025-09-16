@@ -1,42 +1,30 @@
 //
 //  AnimatedGradientBackground.swift
 //  Jessica Invoice
-//
-//  Created by Fredrik Hemlin on 2025-09-16.
-//
-
-
-//
-//  AnimatedGradientBackground.swift
-//  Jessica Invoice
-//
-//  Created by Claude on 2025-09-16.
-//  iOS 26 Animated Liquid Glass Background
+//  🔧 FIXED - Added missing .dashboard static member
 //
 
 import SwiftUI
 
-// MARK: - Animated Gradient Background
 struct AnimatedGradientBackground: View {
     let colors: [Color]
-    let duration: Double
-    let intensity: Double
+    let animation: Animation
     let blendMode: BlendMode
+    let intensity: Double
     
-    @State private var animationPhase: CGFloat = 0
-    @State private var secondaryPhase: CGFloat = 0
-    @State private var pulsePhase: CGFloat = 0
+    @State private var gradientRotation: Double = 0
+    @State private var colorShift: Double = 0
     
     init(
-        colors: [Color],
-        duration: Double = 8.0,
-        intensity: Double = 0.15,
-        blendMode: BlendMode = .overlay
+        colors: [Color] = [.blue, .purple, .pink, .orange],
+        animation: Animation = .easeInOut(duration: 8).repeatForever(autoreverses: true),
+        blendMode: BlendMode = .screen,
+        intensity: Double = 0.8
     ) {
         self.colors = colors
-        self.duration = duration
-        self.intensity = intensity
+        self.animation = animation
         self.blendMode = blendMode
+        self.intensity = intensity
     }
     
     var body: some View {
@@ -44,279 +32,219 @@ struct AnimatedGradientBackground: View {
             // Base gradient layer
             baseGradient
             
-            // Animated flowing layer
-            flowingGradient
-            
-            // Pulse overlay
-            pulseOverlay
-            
-            // Particle effect layer
-            particleLayer
+            // Animated overlay layers
+            ForEach(0..<3, id: \.self) { index in
+                animatedLayer(index: index)
+            }
         }
-        .ignoresSafeArea()
+        .clipped()
         .onAppear {
             startAnimations()
         }
     }
     
-    @ViewBuilder
+    // MARK: - Base Gradient
     private var baseGradient: some View {
         LinearGradient(
-            colors: colors.map { $0.opacity(intensity * 0.5) },
+            colors: colors.map { $0.opacity(intensity * 0.6) },
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
-        .animation(.easeInOut(duration: duration * 2), value: colors)
     }
     
-    @ViewBuilder
-    private var flowingGradient: some View {
-        LinearGradient(
-            colors: colors.map { $0.opacity(intensity * 0.8) } + [.clear],
-            startPoint: UnitPoint(
-                x: 0.3 + sin(animationPhase) * 0.4,
-                y: 0.2 + cos(animationPhase * 0.8) * 0.3
-            ),
-            endPoint: UnitPoint(
-                x: 0.7 + cos(animationPhase * 1.2) * 0.3,
-                y: 0.8 + sin(animationPhase * 0.6) * 0.2
-            )
-        )
-        .blendMode(blendMode)
-    }
-    
-    @ViewBuilder
-    private var pulseOverlay: some View {
-        RadialGradient(
+    // MARK: - Animated Layers
+    private func animatedLayer(index: Int) -> some View {
+        let delay = Double(index) * 0.3
+        let rotationOffset = Double(index) * 45
+        
+        return RadialGradient(
             colors: [
-                colors.first?.opacity(intensity * pulseIntensity) ?? .clear,
+                colors[index % colors.count].opacity(intensity * 0.4),
+                colors[(index + 1) % colors.count].opacity(intensity * 0.2),
                 .clear
             ],
-            center: .center,
-            startRadius: 50 * (1 + pulsePhase * 0.5),
-            endRadius: 400 * (1 + pulsePhase * 0.3)
+            center: UnitPoint(
+                x: 0.5 + sin(gradientRotation + delay) * 0.3,
+                y: 0.5 + cos(gradientRotation + delay) * 0.3
+            ),
+            startRadius: 50,
+            endRadius: 300
         )
-        .blendMode(.softLight)
+        .rotationEffect(.degrees(gradientRotation * 0.5 + rotationOffset))
+        .blendMode(blendMode)
+        .opacity(0.8)
     }
     
-    @ViewBuilder
-    private var particleLayer: some View {
-        GeometryReader { geometry in
-            ForEach(0..<particleCount, id: \.self) { index in
-                ParticleView(
-                    color: colors.randomElement() ?? .blue,
-                    size: geometry.size,
-                    intensity: intensity,
-                    animationOffset: Double(index) * 0.1
-                )
-            }
-        }
-    }
-    
-    private var pulseIntensity: Double {
-        0.3 + sin(pulsePhase) * 0.2
-    }
-    
-    private var particleCount: Int {
-        Int(intensity * 8) + 2
-    }
-    
+    // MARK: - Animation Control
     private func startAnimations() {
-        // Main flowing animation
-        withAnimation(
-            .easeInOut(duration: duration)
-            .repeatForever(autoreverses: true)
-        ) {
-            animationPhase = .pi * 2
-        }
-        
-        // Secondary animation for variety
-        withAnimation(
-            .easeInOut(duration: duration * 1.5)
-            .repeatForever(autoreverses: true)
-        ) {
-            secondaryPhase = .pi * 1.5
-        }
-        
-        // Pulse animation
-        withAnimation(
-            .easeInOut(duration: duration * 0.5)
-            .repeatForever(autoreverses: true)
-        ) {
-            pulsePhase = 1.0
+        withAnimation(animation) {
+            gradientRotation = 360
+            colorShift = 1.0
         }
     }
 }
 
-// MARK: - Particle View
-struct ParticleView: View {
-    let color: Color
-    let size: CGSize
-    let intensity: Double
-    let animationOffset: Double
-    
-    @State private var position: CGPoint = .zero
-    @State private var opacity: Double = 0
-    @State private var scale: CGFloat = 0.5
-    
-    var body: some View {
-        Circle()
-            .fill(
-                RadialGradient(
-                    colors: [
-                        color.opacity(intensity * 0.6),
-                        color.opacity(intensity * 0.2),
-                        .clear
-                    ],
-                    center: .center,
-                    startRadius: 0,
-                    endRadius: 20
-                )
-            )
-            .frame(width: particleSize, height: particleSize)
-            .scaleEffect(scale)
-            .opacity(opacity)
-            .position(position)
-            .blur(radius: 2)
-            .onAppear {
-                setupInitialState()
-                startParticleAnimation()
-            }
-    }
-    
-    private var particleSize: CGFloat {
-        CGFloat(intensity * 40 + 10)
-    }
-    
-    private func setupInitialState() {
-        position = CGPoint(
-            x: CGFloat.random(in: 0...size.width),
-            y: CGFloat.random(in: 0...size.height)
+// MARK: - Static Presets (FIXED - Added missing .dashboard)
+extension AnimatedGradientBackground {
+    // MARK: - Dashboard preset (FIXED - Previously missing)
+    static var dashboard: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.blue, .purple, .indigo, .cyan, .teal],
+            animation: .easeInOut(duration: 12).repeatForever(autoreverses: true),
+            blendMode: .softLight,
+            intensity: 0.7
         )
-        opacity = Double.random(in: 0.1...(intensity * 0.8))
-        scale = CGFloat.random(in: 0.3...0.8)
     }
     
-    private func startParticleAnimation() {
-        withAnimation(
-            .easeInOut(duration: 4 + animationOffset * 2)
-            .repeatForever(autoreverses: true)
-        ) {
-            position = CGPoint(
-                x: CGFloat.random(in: 0...size.width),
-                y: CGFloat.random(in: 0...size.height)
-            )
-            opacity = Double.random(in: 0.05...(intensity * 0.6))
-            scale = CGFloat.random(in: 0.2...1.0)
-        }
+    // MARK: - Invoice preset
+    static var invoice: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.blue, .cyan, .indigo],
+            animation: .easeInOut(duration: 10).repeatForever(autoreverses: true),
+            blendMode: .multiply,
+            intensity: 0.6
+        )
+    }
+    
+    // MARK: - Products preset
+    static var products: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.green, .mint, .teal],
+            animation: .easeInOut(duration: 9).repeatForever(autoreverses: true),
+            blendMode: .overlay,
+            intensity: 0.65
+        )
+    }
+    
+    // MARK: - History preset
+    static var history: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.orange, .yellow, .red],
+            animation: .easeInOut(duration: 11).repeatForever(autoreverses: true),
+            blendMode: .softLight,
+            intensity: 0.55
+        )
+    }
+    
+    // MARK: - Settings preset
+    static var settings: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.purple, .pink, .indigo],
+            animation: .easeInOut(duration: 13).repeatForever(autoreverses: true),
+            blendMode: .screen,
+            intensity: 0.6
+        )
+    }
+    
+    // MARK: - Aurora preset
+    static var aurora: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.green, .blue, .purple, .pink],
+            animation: .easeInOut(duration: 15).repeatForever(autoreverses: true),
+            blendMode: .screen,
+            intensity: 0.8
+        )
+    }
+    
+    // MARK: - Ocean preset
+    static var ocean: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.blue, .cyan, .teal, .mint],
+            animation: .easeInOut(duration: 20).repeatForever(autoreverses: true),
+            blendMode: .multiply,
+            intensity: 0.75
+        )
+    }
+    
+    // MARK: - Sunset preset
+    static var sunset: AnimatedGradientBackground {
+        AnimatedGradientBackground(
+            colors: [.orange, .pink, .purple, .indigo],
+            animation: .easeInOut(duration: 18).repeatForever(autoreverses: true),
+            blendMode: .overlay,
+            intensity: 0.7
+        )
     }
 }
 
-// MARK: - Liquid Wave Background
+// MARK: - Liquid Wave Background Component
 struct LiquidWaveBackground: View {
     let colors: [Color]
-    let waveHeight: CGFloat
     let waveSpeed: Double
+    let waveAmplitude: Double
     
-    @State private var waveOffset: CGFloat = 0
-    @State private var secondWaveOffset: CGFloat = 0
+    @State private var phase: Double = 0
     
-    init(colors: [Color], waveHeight: CGFloat = 100, waveSpeed: Double = 2.0) {
+    init(
+        colors: [Color] = [.blue, .cyan],
+        waveSpeed: Double = 0.02,
+        waveAmplitude: Double = 0.3
+    ) {
         self.colors = colors
-        self.waveHeight = waveHeight
         self.waveSpeed = waveSpeed
+        self.waveAmplitude = waveAmplitude
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: colors.map { $0.opacity(0.1) },
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
+        TimelineView(.animation) { _ in
+            Canvas { context, size in
+                let path = createWavePath(size: size)
+                
+                context.fill(
+                    path,
+                    with: .linearGradient(
+                        Gradient(colors: colors),
+                        startPoint: CGPoint(x: 0, y: 0),
+                        endPoint: CGPoint(x: size.width, y: size.height)
+                    )
                 )
-                
-                // First wave
-                WaveShape(offset: waveOffset, waveHeight: waveHeight)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                colors.first?.opacity(0.15) ?? .clear,
-                                colors.first?.opacity(0.05) ?? .clear
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .blendMode(.overlay)
-                
-                // Second wave (inverted)
-                WaveShape(offset: -secondWaveOffset, waveHeight: waveHeight * 0.8)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                colors.last?.opacity(0.1) ?? .clear,
-                                .clear
-                            ],
-                            startPoint: .bottom,
-                            endPoint: .top
-                        )
-                    )
-                    .blendMode(.softLight)
-                    .rotation3DEffect(
-                        .degrees(180),
-                        axis: (x: 1.0, y: 0.0, z: 0.0)
-                    )
             }
         }
-        .ignoresSafeArea()
         .onAppear {
-            withAnimation(
-                .linear(duration: waveSpeed)
-                .repeatForever(autoreverses: false)
-            ) {
-                waveOffset = geometry.size.width + 100
+            withAnimation(.linear(duration: 1.0).repeatForever(autoreverses: false)) {
+                phase = .pi * 2
+            }
+        }
+    }
+    
+    private func createWavePath(size: CGSize) -> Path {
+        Path { path in
+            let width = size.width
+            let height = size.height
+            let midHeight = height / 2
+            
+            path.move(to: CGPoint(x: 0, y: midHeight))
+            
+            for x in stride(from: 0, through: width, by: 1) {
+                let relativeX = x / width
+                let sine = sin(relativeX * .pi * 4 + phase)
+                let y = midHeight + sine * waveAmplitude * height
+                path.addLine(to: CGPoint(x: x, y: y))
             }
             
-            withAnimation(
-                .linear(duration: waveSpeed * 1.5)
-                .repeatForever(autoreverses: false)
-            ) {
-                secondWaveOffset = geometry.size.width + 100
-            }
+            path.addLine(to: CGPoint(x: width, y: height))
+            path.addLine(to: CGPoint(x: 0, y: height))
+            path.closeSubpath()
         }
     }
 }
 
-// MARK: - Wave Shape
-struct WaveShape: Shape {
-    let offset: CGFloat
-    let waveHeight: CGFloat
+// MARK: - Wave Presets
+extension LiquidWaveBackground {
+    static var ocean: LiquidWaveBackground {
+        LiquidWaveBackground(
+            colors: [.blue.opacity(0.3), .cyan.opacity(0.5), .teal.opacity(0.3)],
+            waveSpeed: 0.015,
+            waveAmplitude: 0.2
+        )
+    }
     
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        
-        let width = rect.width
-        let height = rect.height
-        let midHeight = height / 2
-        
-        path.move(to: CGPoint(x: 0, y: midHeight))
-        
-        for x in stride(from: 0, through: width, by: 1) {
-            let relativeX = (x + offset) / width
-            let sine = sin(relativeX * .pi * 4) * waveHeight * 0.5
-            let cosine = cos(relativeX * .pi * 2) * waveHeight * 0.3
-            let y = midHeight + sine + cosine
-            
-            path.addLine(to: CGPoint(x: x, y: y))
-        }
-        
-        path.addLine(to: CGPoint(x: width, y: height))
-        path.addLine(to: CGPoint(x: 0, y: height))
-        path.closeSubpath()
-        
-        return path
+    static var gentle: LiquidWaveBackground {
+        LiquidWaveBackground(
+            colors: [.mint.opacity(0.2), .green.opacity(0.3)],
+            waveSpeed: 0.01,
+            waveAmplitude: 0.1
+        )
     }
 }
 
@@ -325,185 +253,82 @@ struct AuroraBackground: View {
     let colors: [Color]
     let intensity: Double
     
-    @State private var auroraPhase: CGFloat = 0
-    @State private var wavePhase: CGFloat = 0
+    @State private var animationPhase: Double = 0
     
-    init(colors: [Color], intensity: Double = 0.2) {
+    init(colors: [Color] = [.green, .blue, .purple], intensity: Double = 0.6) {
         self.colors = colors
         self.intensity = intensity
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Base dark background
-                Color.black.opacity(0.02)
-                
-                // Aurora layers
-                ForEach(0..<3, id: \.self) { index in
-                    AuroraLayer(
-                        color: colors[safe: index] ?? colors.first ?? .blue,
-                        intensity: intensity,
-                        offset: auroraPhase * Double(index + 1) * 0.3,
-                        waveOffset: wavePhase * Double(index + 1) * 0.2
-                    )
-                }
+        ZStack {
+            ForEach(0..<colors.count, id: \.self) { index in
+                auroraStreak(color: colors[index], delay: Double(index) * 0.5)
             }
         }
-        .ignoresSafeArea()
         .onAppear {
-            withAnimation(
-                .easeInOut(duration: 12)
-                .repeatForever(autoreverses: true)
-            ) {
-                auroraPhase = .pi * 2
-            }
-            
-            withAnimation(
-                .easeInOut(duration: 8)
-                .repeatForever(autoreverses: true)
-            ) {
-                wavePhase = .pi * 4
+            withAnimation(.easeInOut(duration: 8).repeatForever(autoreverses: true)) {
+                animationPhase = 1.0
             }
         }
     }
-}
-
-struct AuroraLayer: View {
-    let color: Color
-    let intensity: Double
-    let offset: Double
-    let waveOffset: Double
     
-    var body: some View {
-        GeometryReader { geometry in
-            Path { path in
-                let width = geometry.size.width
-                let height = geometry.size.height
-                
-                path.move(to: CGPoint(x: 0, y: height * 0.3))
-                
-                for x in stride(from: 0, through: width, by: 2) {
-                    let relativeX = x / width
-                    let sine1 = sin((relativeX + offset) * .pi * 3) * height * 0.1
-                    let sine2 = sin((relativeX + waveOffset) * .pi * 5) * height * 0.05
-                    let y = height * 0.3 + sine1 + sine2
-                    
-                    path.addLine(to: CGPoint(x: x, y: y))
-                }
-                
-                path.addLine(to: CGPoint(x: width, y: height))
-                path.addLine(to: CGPoint(x: 0, y: height))
-                path.closeSubpath()
-            }
+    private func auroraStreak(color: Color, delay: Double) -> some View {
+        RoundedRectangle(cornerRadius: 50)
             .fill(
                 LinearGradient(
                     colors: [
-                        color.opacity(intensity * 0.8),
+                        color.opacity(intensity),
                         color.opacity(intensity * 0.3),
                         .clear
                     ],
-                    startPoint: .top,
-                    endPoint: .bottom
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
             )
+            .frame(width: 200, height: 800)
+            .rotationEffect(.degrees(25 + sin(animationPhase + delay) * 15))
+            .offset(
+                x: sin(animationPhase + delay) * 100,
+                y: cos(animationPhase + delay * 1.3) * 50
+            )
             .blendMode(.screen)
-        }
     }
 }
 
-// MARK: - Preset Backgrounds
-extension AnimatedGradientBackground {
-    static let invoice = AnimatedGradientBackground(
-        colors: [.blue, .cyan, .indigo],
-        duration: 8.0,
-        intensity: 0.12
-    )
-    
-    static let products = AnimatedGradientBackground(
-        colors: [.green, .mint, .teal],
-        duration: 10.0,
-        intensity: 0.15
-    )
-    
-    static let history = AnimatedGradientBackground(
-        colors: [.orange, .yellow, .pink],
-        duration: 12.0,
-        intensity: 0.18
-    )
-    
-    static let settings = AnimatedGradientBackground(
-        colors: [.purple, .pink, .indigo],
-        duration: 9.0,
-        intensity: 0.14
-    )
-    
-    static let dashboard = AnimatedGradientBackground(
-        colors: [.blue, .purple, .pink],
-        duration: 10.0,
-        intensity: 0.2
-    )
-}
-
-extension LiquidWaveBackground {
-    static let ocean = LiquidWaveBackground(
-        colors: [.blue, .cyan, .teal],
-        waveHeight: 80,
-        waveSpeed: 3.0
-    )
-    
-    static let sunset = LiquidWaveBackground(
-        colors: [.orange, .pink, .purple],
-        waveHeight: 120,
-        waveSpeed: 2.5
-    )
-}
-
+// MARK: - Aurora Presets
 extension AuroraBackground {
-    static let northern = AuroraBackground(
-        colors: [.green, .blue, .purple],
-        intensity: 0.25
-    )
+    static var northern: AuroraBackground {
+        AuroraBackground(
+            colors: [.green, .mint, .cyan, .blue],
+            intensity: 0.7
+        )
+    }
     
-    static let southern = AuroraBackground(
-        colors: [.pink, .purple, .blue],
-        intensity: 0.3
-    )
-}
-
-// MARK: - Helper Extensions
-extension Array {
-    subscript(safe index: Index) -> Element? {
-        return indices.contains(index) ? self[index] : nil
+    static var cosmic: AuroraBackground {
+        AuroraBackground(
+            colors: [.purple, .pink, .indigo, .blue],
+            intensity: 0.8
+        )
     }
 }
 
+// MARK: - Preview
 #Preview {
-    VStack(spacing: 0) {
-        // Animated Gradient
+    VStack {
         AnimatedGradientBackground.dashboard
             .frame(height: 200)
             .overlay(
-                Text("Animated Gradient")
-                    .font(.headline)
+                Text("Dashboard Background")
+                    .font(.title2.weight(.semibold))
                     .foregroundStyle(.white)
             )
         
-        // Liquid Wave
-        LiquidWaveBackground.ocean
+        AnimatedGradientBackground.invoice
             .frame(height: 200)
             .overlay(
-                Text("Liquid Wave")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-            )
-        
-        // Aurora
-        AuroraBackground.northern
-            .frame(height: 200)
-            .overlay(
-                Text("Aurora Background")
-                    .font(.headline)
+                Text("Invoice Background")
+                    .font(.title2.weight(.semibold))
                     .foregroundStyle(.white)
             )
     }
