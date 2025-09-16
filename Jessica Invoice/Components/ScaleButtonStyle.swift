@@ -5,6 +5,14 @@
 //  Created by Claude on 2025-09-16.
 //
 
+
+//
+//  ScaleButtonStyle.swift
+//  Jessica Invoice
+//
+//  Created by Fredrik Hemlin on 2025-09-13.
+//
+
 import SwiftUI
 
 struct ScaleButtonStyle: ButtonStyle {
@@ -67,9 +75,9 @@ struct GlassButtonStyle: ButtonStyle {
                     .fill(.ultraThinMaterial)
                     .stroke(.white.opacity(0.2), lineWidth: isProminent ? 1.5 : 1)
                     .shadow(
-                        color: .black.opacity(0.1),
-                        radius: isProminent ? 8 : 4,
-                        x: 0,
+                        color: .black.opacity(0.1), 
+                        radius: isProminent ? 8 : 4, 
+                        x: 0, 
                         y: isProminent ? 4 : 2
                     )
             )
@@ -113,7 +121,7 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Secondary Button Style
+// MARK: - Secondary Button Style  
 struct SecondaryButtonStyle: ButtonStyle {
     let color: Color
     

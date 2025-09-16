@@ -2,8 +2,9 @@
 //  Company.swift
 //  Jessica Invoice
 //
-//  Created by Claude on 2025-09-16.
+//  Created by Claude on 2025-09-16 v2.
 //
+
 
 import Foundation
 
@@ -21,6 +22,43 @@ struct Company: Identifiable, Codable {
     var defaultCurrency: String
     var defaultVatRate: Double
     var logoData: Data?
+    
+    private enum CodingKeys: String, CodingKey {
+        case id, name, organizationNumber, vatNumber, address, email, phone, website, bankAccount, defaultPaymentTerms, defaultCurrency, defaultVatRate, logoData
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        organizationNumber = try container.decode(String.self, forKey: .organizationNumber)
+        vatNumber = try container.decode(String.self, forKey: .vatNumber)
+        address = try container.decode(Address.self, forKey: .address)
+        email = try container.decode(String.self, forKey: .email)
+        phone = try container.decode(String.self, forKey: .phone)
+        website = try container.decode(String.self, forKey: .website)
+        bankAccount = try container.decode(BankAccount.self, forKey: .bankAccount)
+        defaultPaymentTerms = try container.decode(Int.self, forKey: .defaultPaymentTerms)
+        defaultCurrency = try container.decode(String.self, forKey: .defaultCurrency)
+        defaultVatRate = try container.decode(Double.self, forKey: .defaultVatRate)
+        logoData = try container.decodeIfPresent(Data.self, forKey: .logoData)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(organizationNumber, forKey: .organizationNumber)
+        try container.encode(vatNumber, forKey: .vatNumber)
+        try container.encode(address, forKey: .address)
+        try container.encode(email, forKey: .email)
+        try container.encode(phone, forKey: .phone)
+        try container.encode(website, forKey: .website)
+        try container.encode(bankAccount, forKey: .bankAccount)
+        try container.encode(defaultPaymentTerms, forKey: .defaultPaymentTerms)
+        try container.encode(defaultCurrency, forKey: .defaultCurrency)
+        try container.encode(defaultVatRate, forKey: .defaultVatRate)
+        try container.encodeIfPresent(logoData, forKey: .logoData)
+    }
     
     var hasCompletedSetup: Bool {
         !name.isEmpty &&

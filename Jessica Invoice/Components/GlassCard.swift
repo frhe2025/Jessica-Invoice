@@ -5,6 +5,14 @@
 //  Created by Claude on 2025-09-16.
 //
 
+
+//
+//  GlassCard.swift
+//  Jessica Invoice
+//
+//  Created by Fredrik Hemlin on 2025-09-13.
+//
+
 import SwiftUI
 
 struct GlassCard<Content: View>: View {
@@ -35,9 +43,9 @@ struct GlassCard<Content: View>: View {
                     .fill(.ultraThinMaterial)
                     .stroke(.white.opacity(0.2), lineWidth: strokeWidth)
                     .shadow(
-                        color: .black.opacity(0.1),
-                        radius: shadowRadius,
-                        x: shadowOffset.width,
+                        color: .black.opacity(0.1), 
+                        radius: shadowRadius, 
+                        x: shadowOffset.width, 
                         y: shadowOffset.height
                     )
             )
