@@ -5,17 +5,49 @@
 //  Created by Claude on 2025-09-16
 //
 
-
-//
-//  Invoice.swift
-//  Jessica Invoice
-//
-//  Created by Fredrik Hemlin on 2025-09-13.
-//
-
 import Foundation
 
-struct Invoice: Identifiable, Codable, Hashable {
+// MARK: - Invoice Status
+enum InvoiceStatus: String, CaseIterable, Codable, Hashable {
+    case draft = "draft"
+    case sent = "sent"
+    case paid = "paid"
+    case overdue = "overdue"
+    case cancelled = "cancelled"
+    
+    var displayName: String {
+        switch self {
+        case .draft: return "Utkast"
+        case .sent: return "Skickad"
+        case .paid: return "Betald"
+        case .overdue: return "Försenad"
+        case .cancelled: return "Avbruten"
+        }
+    }
+    
+    var color: String {
+        switch self {
+        case .draft: return "gray"
+        case .sent: return "blue"
+        case .paid: return "green"
+        case .overdue: return "red"
+        case .cancelled: return "gray"
+        }
+    }
+    
+    var systemImage: String {
+        switch self {
+        case .draft: return "doc.text"
+        case .sent: return "paperplane"
+        case .paid: return "checkmark.circle"
+        case .overdue: return "exclamationmark.triangle"
+        case .cancelled: return "xmark.circle"
+        }
+    }
+}
+
+// MARK: - Invoice Model
+struct Invoice: Identifiable, Codable, Hashable, Equatable {
     let id = UUID()
     var number: String
     var date: Date
@@ -70,6 +102,14 @@ struct Invoice: Identifiable, Codable, Hashable {
         self.paymentTerms = paymentTerms
         self.currency = currency
         self.vatRate = vatRate
+    }
+    
+    static func == (lhs: Invoice, rhs: Invoice) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 

@@ -1,0 +1,311 @@
+//
+//  DataModels.swift
+//  Jessica Invoice
+//
+//  Created by Claude on 2025-09-17.
+//  Centralized Data Models - iOS 26 Compatible
+//
+
+import Foundation
+import SwiftUI
+
+// MARK: - Invoice Model
+struct Invoice: Identifiable, Codable, Hashable, Equatable {
+    let id = UUID()
+    var invoiceNumber: String
+    var customerName: String
+    var customerEmail: String
+    var customerAddress: String
+    var issueDate: Date
+    var dueDate: Date
+    var items: [InvoiceItem]
+    var status: InvoiceStatus
+    var notes: String?
+    var discount: Double // percentage
+    var vatRate: Double // percentage
+    
+    var subtotal: Double {
+        items.reduce(0) { $0 + $1.total }
+    }
+    
+    var vatAmount: Double {
+        subtotal * (vatRate / 100)
+    }
+    
+    var discountAmount: Double {
+        subtotal * (discount / 100)
+    }
+    
+    var total: Double {
+        subtotal + vatAmount - discountAmount
+    }
+    
+    var isOverdue: Bool {
+        status == .sent && Date() > dueDate
+    }
+    
+    init(
+        invoiceNumber: String = "",
+        customerName: String = "",
+        customerEmail: String = "",
+        customerAddress: String = "",
+        issueDate: Date = Date(),
+        dueDate: Date = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date(),
+        items: [InvoiceItem] = [],
+        status: InvoiceStatus = .draft,
+        notes: String? = nil,
+        discount: Double = 0.0,
+        vatRate: Double = 25.0
+    ) {
+        self.invoiceNumber = invoiceNumber
+        self.customerName = customerName
+        self.customerEmail = customerEmail
+        self.customerAddress = customerAddress
+        self.issueDate = issueDate
+        self.dueDate = dueDate
+        self.items = items
+        self.status = status
+        self.notes = notes
+        self.discount = discount
+        self.vatRate = vatRate
+    }
+    
+    static func == (lhs: Invoice, rhs: Invoice) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+// MARK: - Invoice Item Model
+struct InvoiceItem: Identifiable, Codable, Hashable, Equatable {
+    let id = UUID()
+    var productId: UUID?
+    var description: String
+    var quantity: Double
+    var unitPrice: Double
+    var unit: String
+    var vatRate: Double
+    
+    var total: Double {
+        quantity * unitPrice
+    }
+    
+    var vatAmount: Double {
+        total * (vatRate / 100)
+    }
+    
+    init(
+        productId: UUID? = nil,
+        description: String = "",
+        quantity: Double = 1.0,
+        unitPrice: Double = 0.0,
+        unit: String = "st",
+        vatRate: Double = 25.0
+    ) {
+        self.productId = productId
+        self.description = description
+        self.quantity = quantity
+        self.unitPrice = unitPrice
+        self.unit = unit
+        self.vatRate = vatRate
+    }
+    
+    static func == (lhs: InvoiceItem, rhs: InvoiceItem) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+// MARK: - Company Report Data Model
+struct CompanyReportData: Codable, Hashable, Equatable {
+    let totalRevenue: Double
+    let totalInvoices: Int
+    let paidInvoices: Int
+    let pendingInvoices: Int
+    let overdueInvoices: Int
+    let averageInvoiceValue: Double
+    let monthlyGrowth: Double
+    let topCategories: [CategoryReport]
+    let recentActivity: [ActivityItem]
+    
+    init(
+        totalRevenue: Double = 0,
+        totalInvoices: Int = 0,
+        paidInvoices: Int = 0,
+        pendingInvoices: Int = 0,
+        overdueInvoices: Int = 0,
+        averageInvoiceValue: Double = 0,
+        monthlyGrowth: Double = 0,
+        topCategories: [CategoryReport] = [],
+        recentActivity: [ActivityItem] = []
+    ) {
+        self.totalRevenue = totalRevenue
+        self.totalInvoices = totalInvoices
+        self.paidInvoices = paidInvoices
+        self.pendingInvoices = pendingInvoices
+        self.overdueInvoices = overdueInvoices
+        self.averageInvoiceValue = averageInvoiceValue
+        self.monthlyGrowth = monthlyGrowth
+        self.topCategories = topCategories
+        self.recentActivity = recentActivity
+    }
+}
+
+// MARK: - Category Report Model
+struct CategoryReport: Identifiable, Codable, Hashable, Equatable {
+    let id = UUID()
+    let category: ProductCategory
+    let revenue: Double
+    let count: Int
+    
+    static func == (lhs: CategoryReport, rhs: CategoryReport) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+// MARK: - Activity Item Model
+struct ActivityItem: Identifiable, Codable, Hashable, Equatable {
+    let id = UUID()
+    let title: String
+    let description: String
+    let timestamp: Date
+    let type: ActivityType
+    
+    enum ActivityType: String, Codable {
+        case invoiceCreated = "invoice_created"
+        case invoiceSent = "invoice_sent"
+        case invoicePaid = "invoice_paid"
+        case productAdded = "product_added"
+        case customerAdded = "customer_added"
+    }
+    
+    static func == (lhs: ActivityItem, rhs: ActivityItem) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+// MARK: - Report Data Details
+struct ReportDataDetails: Codable, Hashable, Equatable {
+    let period: String
+    let revenue: Double
+    let invoiceCount: Int
+    let averageValue: Double
+    let growthRate: Double
+    
+    init(
+        period: String = "",
+        revenue: Double = 0,
+        invoiceCount: Int = 0,
+        averageValue: Double = 0,
+        growthRate: Double = 0
+    ) {
+        self.period = period
+        self.revenue = revenue
+        self.invoiceCount = invoiceCount
+        self.averageValue = averageValue
+        self.growthRate = growthRate
+    }
+}
+
+// MARK: - Management Action Row Data
+struct ManagementActionRow: Identifiable, Hashable, Equatable {
+    let id = UUID()
+    let title: String
+    let subtitle: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+    
+    init(
+        title: String,
+        subtitle: String,
+        icon: String,
+        color: Color,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.icon = icon
+        self.color = color
+        self.action = action
+    }
+    
+    static func == (lhs: ManagementActionRow, rhs: ManagementActionRow) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+// MARK: - Stat Card Data
+struct StatCard: Identifiable, Hashable, Equatable {
+    let id = UUID()
+    let title: String
+    let value: String
+    let subtitle: String
+    let icon: String
+    let color: Color
+    let trend: TrendDirection?
+    
+    enum TrendDirection: String, Codable {
+        case up = "up"
+        case down = "down"
+        case stable = "stable"
+        
+        var icon: String {
+            switch self {
+            case .up: return "arrow.up"
+            case .down: return "arrow.down"
+            case .stable: return "minus"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .up: return .green
+            case .down: return .red
+            case .stable: return .gray
+            }
+        }
+    }
+    
+    init(
+        title: String,
+        value: String,
+        subtitle: String,
+        icon: String,
+        color: Color,
+        trend: TrendDirection? = nil
+    ) {
+        self.title = title
+        self.value = value
+        self.subtitle = subtitle
+        self.icon = icon
+        self.color = color
+        self.trend = trend
+    }
+    
+    static func == (lhs: StatCard, rhs: StatCard) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

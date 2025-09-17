@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Product: Identifiable, Codable, Hashable {
+struct Product: Identifiable, Codable, Hashable, Equatable {
     let id = UUID()
     var name: String
     var description: String
@@ -43,6 +43,14 @@ struct Product: Identifiable, Codable, Hashable {
         self.isActive = isActive
         self.createdDate = createdDate
         self.lastUsed = lastUsed
+    }
+    
+    static func == (lhs: Product, rhs: Product) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 

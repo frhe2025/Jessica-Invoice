@@ -158,58 +158,9 @@ extension Color {
 }
 
 // MARK: - Supporting Enums
-enum InvoiceStatus: String, CaseIterable, Codable {
-    case draft = "draft"
-    case sent = "sent"
-    case paid = "paid"
-    case overdue = "overdue"
-    case cancelled = "cancelled"
-    
-    var displayName: String {
-        switch self {
-        case .draft: return "Utkast"
-        case .sent: return "Skickad"
-        case .paid: return "Betald"
-        case .overdue: return "Försenad"
-        case .cancelled: return "Annullerad"
-        }
-    }
-}
-
-enum ProductCategory: String, CaseIterable, Codable {
-    case service = "service"
-    case product = "product"
-    case digital = "digital"
-    case consultation = "consultation"
-    case subscription = "subscription"
-    case other = "other"
-    
-    var displayName: String {
-        switch self {
-        case .service: return "Tjänst"
-        case .product: return "Produkt"
-        case .digital: return "Digital"
-        case .consultation: return "Konsultation"
-        case .subscription: return "Prenumeration"
-        case .other: return "Övrigt"
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .service: return "wrench.and.screwdriver"
-        case .product: return "cube.box"
-        case .digital: return "laptopcomputer"
-        case .consultation: return "person.crop.circle.badge.questionmark"
-        case .subscription: return "arrow.clockwise.circle"
-        case .other: return "ellipsis.circle"
-        }
-    }
-}
-
 enum TaskPriority: String, CaseIterable, Codable {
     case low = "low"
-    case medium = "medium"
+    case medium = "medium" 
     case high = "high"
     case urgent = "urgent"
     

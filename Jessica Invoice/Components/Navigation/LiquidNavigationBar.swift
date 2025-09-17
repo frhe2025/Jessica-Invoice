@@ -3,7 +3,7 @@
 //  Jessica Invoice
 //
 //  Created by Claude on 2025-09-16.
-//  iOS 26 Liquid Navigation Bar
+//  iOS 26 Liquid Navigation Bar - Fixed Version
 //
 
 import SwiftUI
@@ -128,12 +128,17 @@ struct LiquidNavigationBar: View {
         if isTransparent {
             Color.clear
         } else {
+            // Fixed: Using correct LiquidGlassBackground API
             LiquidGlassBackground(
-                intensity: isScrolled ? 1.2 : 0.8,
-                tintColor: tintColor,
-                isAdaptive: true
+                colors: [
+                    tintColor?.opacity(0.3) ?? .blue.opacity(0.3),
+                    tintColor?.opacity(0.1) ?? .blue.opacity(0.1),
+                    .clear
+                ],
+                intensity: isScrolled ? 0.12 : 0.08,
+                isAnimated: true
             )
-            .blur(radius: isScrolled ? 0 : 2)
+            .blur(radius: isScrolled ? 0 : 1)
             .animation(.easeInOut(duration: 0.4), value: isScrolled)
         }
     }
@@ -146,6 +151,8 @@ struct LiquidNavigationBar: View {
                     Image(systemName: systemImage)
                         .font(.title2)
                         .fontWeight(.medium)
+                        .symbolRenderingMode(.hierarchical)
+                        .symbolEffect(.bounce, value: action.isPressed)
                 } else if let customImage = action.customImage {
                     Image(customImage)
                         .resizable()
@@ -164,9 +171,10 @@ struct LiquidNavigationBar: View {
                     .fill(.ultraThinMaterial)
                     .opacity(action.hasBackground ? 1.0 : 0.0)
             )
-            .liquidRipple(trigger: false, color: action.color ?? tintColor ?? .blue)
-            .scaleEffect(action.isPressed ? 0.9 : 1.0)
+            .liquidRipple(trigger: action.isPressed, color: action.color ?? tintColor ?? .blue)
+            .scaleEffect(action.isPressed ? 0.92 : 1.0)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: action.isPressed)
+            .sensoryFeedback(.impact(flexibility: .soft, intensity: 0.7), trigger: action.isPressed)
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(action.isDisabled)
@@ -304,8 +312,10 @@ struct LiquidTabBar: View {
                             GeometryReader { geometry in
                                 Color.clear
                                     .onAppear {
-                                        tabItemWidths[index] = geometry.size.width
-                                        totalWidth = tabItemWidths.reduce(0, +)
+                                        if index < tabItemWidths.count {
+                                            tabItemWidths[index] = geometry.size.width
+                                            totalWidth = tabItemWidths.reduce(0, +)
+                                        }
                                     }
                             }
                         )
@@ -315,10 +325,15 @@ struct LiquidTabBar: View {
             .padding(.vertical, 12)
         }
         .background(
+            // Fixed: Using correct LiquidGlassBackground API
             LiquidGlassBackground(
-                intensity: 1.0,
-                tintColor: tintColor,
-                isAdaptive: true
+                colors: [
+                    tintColor.opacity(0.2),
+                    tintColor.opacity(0.1),
+                    .clear
+                ],
+                intensity: 0.1,
+                isAnimated: true
             )
             .blur(radius: 1)
         )
@@ -444,28 +459,33 @@ struct LiquidNavigationContainer<Content: View>: View {
     }
 }
 
-// Fix för LiquidNavigationBar.swift - @State i Preview
-// Ersätt denna rad i Preview:
-
-// FÖRE (orsakar warning):
-// @State var selectedTab = 0
-
-// EFTER (fixad version):
-#Preview {
+// MARK: - Previews
+#Preview("Full Navigation Experience") {
     @Previewable @State var selectedTab = 0
     
-    LiquidNavigationBar(
-        title: "Jessica Invoice",
-        selectedTab: $selectedTab,
-        tabs: [
-            TabItem(title: "Dashboard", icon: "house"),
-            TabItem(title: "Faktura", icon: "doc.text"),
-            TabItem(title: "Produkter", icon: "cart"),
-            TabItem(title: "Historik", icon: "clock"),
-            TabItem(title: "Inställningar", icon: "gearshape")
-        ]
-    )
-}
+    LiquidNavigationContainer(
+        navigationBar: LiquidNavigationBar(
+            title: "Jessica Invoice",
+            subtitle: "Skapa fakturor enkelt",
+            leadingAction: .back { },
+            trailingActions: [
+                .share { },
+                .more { }
+            ],
+            showsSeparator: true,
+            tintColor: .blue
+        ),
+        tabBar: LiquidTabBar(
+            selectedTab: $selectedTab,
+            tintColor: .blue,
+            tabs: [
+                TabItem(title: "Dashboard", icon: "house"),
+                TabItem(title: "Faktura", icon: "doc.text"),
+                TabItem(title: "Produkter", icon: "cart"),
+                TabItem(title: "Historik", icon: "clock"),
+                TabItem(title: "Inställningar", icon: "gearshape")
+            ]
+        )
     ) {
         ScrollView {
             VStack(spacing: 20) {
@@ -483,10 +503,60 @@ struct LiquidNavigationContainer<Content: View>: View {
         }
     }
     .background(
-        LinearGradient(
-            colors: [.blue.opacity(0.1), .purple.opacity(0.05)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+        LiquidGlassBackground(
+            colors: [.blue, .purple, .indigo],
+            intensity: 0.05,
+            isAnimated: true
+        )
+    )
+}
+
+#Preview("Simple Navigation Bar") {
+    VStack(spacing: 0) {
+        LiquidNavigationBar(
+            title: "Inställningar",
+            leadingAction: .back { },
+            trailingActions: [.done { }],
+            tintColor: .green
+        )
+        
+        Spacer()
+        
+        Text("Settings Content")
+            .font(.title2)
+            .foregroundStyle(.secondary)
+    }
+    .background(.regularMaterial)
+}
+
+#Preview("Tab Bar Only") {
+    @Previewable @State var selectedTab = 2
+    
+    VStack {
+        Spacer()
+        
+        Text("Tab \(selectedTab + 1) Content")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .foregroundStyle(.primary)
+        
+        Spacer()
+        
+        LiquidTabBar(
+            selectedTab: $selectedTab,
+            tintColor: .orange,
+            tabs: [
+                TabItem(title: "Hem", icon: "house"),
+                TabItem(title: "Sök", icon: "magnifyingglass"),
+                TabItem(title: "Favoriter", icon: "heart"),
+                TabItem(title: "Profil", icon: "person")
+            ]
+        )
+    }
+    .background(
+        LiquidGlassBackground(
+            colors: [.orange, .red, .pink],
+            intensity: 0.08
         )
     )
 }
