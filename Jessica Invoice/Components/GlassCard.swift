@@ -115,7 +115,7 @@ struct GlassCard<Content: View>: View {
 extension View {
     func glassCard(style: GlassCard<Self>.CardStyle = .compact) -> some View {
         GlassCard(style: style) {
-            Group { self }
+            self
         }
     }
 }
@@ -123,7 +123,7 @@ extension View {
 // MARK: - Preview
 #Preview {
     VStack(spacing: 24) {
-        GlassCard.compact {
+        GlassCard(style: .compact) {
             VStack {
                 Text("Compact Card")
                     .font(.headline)
@@ -133,7 +133,7 @@ extension View {
             }
         }
         
-        GlassCard.prominent {
+        GlassCard(style: .prominent) {
             VStack(spacing: 12) {
                 Circle()
                     .fill(.blue.opacity(0.2))
@@ -151,7 +151,7 @@ extension View {
             }
         }
         
-        GlassCard.floating {
+        GlassCard(style: .floating) {
             VStack(spacing: 16) {
                 HStack {
                     Image(systemName: "star.fill")
@@ -180,3 +180,4 @@ extension View {
     .padding()
     .background(Color.gray.opacity(0.1))
 }
+

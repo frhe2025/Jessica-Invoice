@@ -5,7 +5,6 @@
 //  Created by Fredrik Hemlin on 2025-09-16.
 //
 
-
 //
 //  LiquidGlassCard.swift
 //  Jessica Invoice
@@ -17,6 +16,7 @@
 import SwiftUI
 
 // MARK: - iOS 26 Liquid Glass Card
+@available(iOS 18.0, *)
 struct LiquidGlassCard<Content: View>: View {
     let content: Content
     let style: LiquidGlassStyle
@@ -24,8 +24,8 @@ struct LiquidGlassCard<Content: View>: View {
     let adaptiveColor: Bool
     
     @Environment(\.colorScheme) var colorScheme
-    @State private var animationPhase = 0.0
-    @State private var interactionIntensity = 0.0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isPressed = false
     
     init(
         style: LiquidGlassStyle = .adaptive,
@@ -39,136 +39,69 @@ struct LiquidGlassCard<Content: View>: View {
         self.content = content()
     }
 
-    init(style: LiquidGlassStyle = .adaptive, depth: LiquidDepth = .medium, adaptiveColor: Bool = true, content: Content) {
-        self.style = style
-        self.depth = depth
-        self.adaptiveColor = adaptiveColor
-        self.content = content
-    }
-    
     var body: some View {
-        content
-            .background(liquidGlassBackground)
-            .clipShape(RoundedRectangle(cornerRadius: style.cornerRadius))
-            .overlay(liquidGlassOverlay)
-            .shadow(color: shadowColor, radius: depth.shadowRadius, x: 0, y: depth.shadowOffset)
-            .scaleEffect(1.0 + interactionIntensity * 0.02)
-            .onTapGesture {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                    interactionIntensity = 0.5
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        interactionIntensity = 0.0
+        Group {
+            #if os(iOS) || os(tvOS) || os(visionOS)
+            if #available(iOS 18.0, tvOS 18.0, visionOS 2.0, *) {
+                content
+                    .padding(paddingForStyle)
+                    .glassEffect(in: .rect(cornerRadius: style.cornerRadius))
+                    .shadow(color: shadowColor, radius: depth.shadowRadius, x: 0, y: depth.shadowOffset)
+                    .scaleEffect(isPressed && !reduceMotion ? 0.98 : 1.0)
+                    .onTapGesture {
+                        guard !reduceMotion else { return }
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { isPressed = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isPressed = false }
+                        }
+                    }
+            } else {
+                // Fallback for earlier SDKs
+                content
+                    .padding(paddingForStyle)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: style.cornerRadius))
+                    .shadow(color: shadowColor, radius: depth.shadowRadius, x: 0, y: depth.shadowOffset)
+                    .scaleEffect(isPressed && !reduceMotion ? 0.98 : 1.0)
+                    .onTapGesture {
+                        guard !reduceMotion else { return }
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { isPressed = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isPressed = false }
+                        }
+                    }
+            }
+            #else
+            // Other platforms fallback
+            content
+                .padding(paddingForStyle)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: style.cornerRadius))
+                .shadow(color: shadowColor, radius: depth.shadowRadius, x: 0, y: depth.shadowOffset)
+                .scaleEffect(isPressed && !reduceMotion ? 0.98 : 1.0)
+                .onTapGesture {
+                    guard !reduceMotion else { return }
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { isPressed = true }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isPressed = false }
                     }
                 }
-            }
-            .onAppear {
-                startLiquidAnimation()
-            }
-    }
-    
-    // MARK: - Liquid Glass Background
-    private var liquidGlassBackground: some View {
-        ZStack {
-            // Base glass material
-            RoundedRectangle(cornerRadius: style.cornerRadius)
-                .fill(style.baseMaterial)
-            
-            // Liquid shimmer effect
-            if style.hasShimmer {
-                liquidShimmerEffect
-            }
-            
-            // Adaptive color overlay
-            if adaptiveColor {
-                adaptiveColorOverlay
-            }
+            #endif
         }
-    }
-    
-    // MARK: - Liquid Shimmer Effect
-    private var liquidShimmerEffect: some View {
-        LinearGradient(
-            colors: [
-                .clear,
-                .white.opacity(0.3),
-                .clear,
-                .white.opacity(0.2),
-                .clear
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .mask(
-            RoundedRectangle(cornerRadius: style.cornerRadius)
-                .fill(
-                    LinearGradient(
-                        colors: [.clear, .white, .clear],
-                        startPoint: .init(x: -0.3 + animationPhase, y: -0.3 + animationPhase),
-                        endPoint: .init(x: 0.7 + animationPhase, y: 0.7 + animationPhase)
-                    )
-                )
-        )
-        .animation(.linear(duration: 3.0).repeatForever(autoreverses: false), value: animationPhase)
-    }
-    
-    // MARK: - Adaptive Color Overlay
-    private var adaptiveColorOverlay: some View {
-        RoundedRectangle(cornerRadius: style.cornerRadius)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        adaptiveAccentColor.opacity(0.1),
-                        adaptiveAccentColor.opacity(0.05),
-                        .clear
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-    }
-    
-    // MARK: - Liquid Glass Overlay
-    private var liquidGlassOverlay: some View {
-        RoundedRectangle(cornerRadius: style.cornerRadius)
-            .stroke(
-                LinearGradient(
-                    colors: strokeColors,
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                lineWidth: style.strokeWidth
-            )
     }
     
     // MARK: - Computed Properties
     private var shadowColor: Color {
-        colorScheme == .dark ? 
-            .black.opacity(0.4) : 
+        colorScheme == .dark ?
+            .black.opacity(0.4) :
             .black.opacity(0.1)
     }
     
-    private var strokeColors: [Color] {
-        [
-            .white.opacity(colorScheme == .dark ? 0.15 : 0.4),
-            .white.opacity(colorScheme == .dark ? 0.05 : 0.2),
-            .clear,
-            .white.opacity(colorScheme == .dark ? 0.1 : 0.3)
-        ]
-    }
-    
-    private var adaptiveAccentColor: Color {
-        // This would ideally sample the dominant color from content
-        // For now, using system accent color
-        .accentColor
-    }
-    
-    // MARK: - Animation Functions
-    private func startLiquidAnimation() {
-        withAnimation(.linear(duration: 3.0).repeatForever(autoreverses: false)) {
-            animationPhase = 1.0
+    private var paddingForStyle: CGFloat {
+        switch style {
+        case .minimal: return 12
+        case .adaptive: return 16
+        case .prominent: return 20
+        case .floating: return 20
+        case .interactive: return 16
         }
     }
 }
@@ -274,7 +207,7 @@ extension LiquidGlassCard {
 #Preview {
     ScrollView {
         VStack(spacing: 24) {
-            LiquidGlassCard.minimal {
+            LiquidGlassCard(style: .minimal, depth: .subtle) {
                 VStack {
                     Text("Minimal Card")
                         .font(.headline)
@@ -285,7 +218,7 @@ extension LiquidGlassCard {
                 .padding(20)
             }
             
-            LiquidGlassCard.prominent {
+            LiquidGlassCard(style: .prominent, depth: .deep) {
                 VStack(spacing: 16) {
                     Image(systemName: "star.fill")
                         .font(.largeTitle)
@@ -303,7 +236,7 @@ extension LiquidGlassCard {
                 .padding(24)
             }
             
-            LiquidGlassCard.floating {
+            LiquidGlassCard(style: .floating, depth: .floating) {
                 HStack(spacing: 16) {
                     Circle()
                         .fill(.blue.gradient)

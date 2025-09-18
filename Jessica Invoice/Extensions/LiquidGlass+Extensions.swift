@@ -14,7 +14,6 @@
 
 import SwiftUI
 import UIKit
-private typealias SUIFont = SwiftUI.Font
 
 // MARK: - View Extensions for Liquid Glass
 
@@ -29,28 +28,28 @@ extension View {
         adaptiveColor: Bool = true
     ) -> some View {
         LiquidGlassCard(style: style, depth: depth, adaptiveColor: adaptiveColor) {
-            Group { self }
+            self
         }
     }
     
     /// Applies minimal liquid glass styling
     func liquidGlassMinimal() -> some View {
-        LiquidGlassCard(style: .minimal) { Group { self } }
+        LiquidGlassCard(style: .minimal) { self }
     }
     
     /// Applies prominent liquid glass styling
     func liquidGlassProminent() -> some View {
-        LiquidGlassCard(style: .prominent) { Group { self } }
+        LiquidGlassCard(style: .prominent) { self }
     }
     
     /// Applies floating liquid glass styling
     func liquidGlassFloating() -> some View {
-        LiquidGlassCard(style: .floating) { Group { self } }
+        LiquidGlassCard(style: .floating) { self }
     }
     
     /// Applies interactive liquid glass styling
     func liquidGlassInteractive() -> some View {
-        LiquidGlassCard(style: .interactive) { Group { self } }
+        LiquidGlassCard(style: .interactive) { self }
     }
     
     // MARK: - Liquid Background Extensions
@@ -116,8 +115,8 @@ extension View {
         VStack(alignment: .leading, spacing: 16) {
             header()
             LiquidGlassCard(style: .adaptive) {
-                Group { self }
-                    .padding(.all, 20)
+                self
+                    .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
             }
         }
     }
@@ -128,8 +127,7 @@ extension View {
         isLast: Bool = false
     ) -> some View {
         self
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
             .background(
                 Rectangle()
                     .fill(.ultraThinMaterial)
@@ -305,9 +303,10 @@ struct ResponsivePaddingModifier: ViewModifier {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     
     func body(content: Content) -> some View {
-        content
-            .padding([.leading, .trailing], horizontalSizeClass == .compact ? 16 : 24)
-            .padding([.top, .bottom], horizontalSizeClass == .compact ? 12 : 16)
+        let h: CGFloat = horizontalSizeClass == .compact ? 16 : 24
+        let v: CGFloat = horizontalSizeClass == .compact ? 12 : 16
+        return content
+            .padding(EdgeInsets(top: v, leading: h, bottom: v, trailing: h))
     }
 }
 
@@ -317,7 +316,7 @@ struct ResponsiveFontModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .font(SUIFont.body)
+            .font(SwiftUI.Font.body)
     }
 }
 
@@ -619,37 +618,38 @@ struct PerformanceOptimizedLiquidModifier: ViewModifier {
     ScrollView {
         VStack(spacing: 24) {
             Text("Liquid Glass Extensions Demo")
-                .font(SUIFont.largeTitle)
+                .font(SwiftUI.Font.largeTitle)
                 .fontWeight(.bold)
                 .liquidGlassProminent()
-                .padding(.all, 20)
+                .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
             
             VStack(spacing: 16) {
                 Text("Basic Card")
                     .liquidGlassCard()
-                    .padding(16)
+                    .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
                 
                 Text("Minimal Style")
                     .liquidGlassMinimal()
-                    .padding(16)
+                    .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
                 
                 Text("Interactive Style")
                     .liquidGlassInteractive()
                     .liquidHoverEffect()
-                    .padding(16)
+                    .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
                 
                 Text("With Shimmer")
                     .liquidGlassCard()
                     .liquidShimmer()
-                    .padding(16)
+                    .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
                 
                 Text("Entrance Animation")
                     .liquidGlassCard()
                     .liquidEntranceAnimation(delay: 0.5)
-                    .padding(16)
+                    .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
             }
         }
-        .padding(20)
+        .padding(EdgeInsets(top: 24, leading: 24, bottom: 24, trailing: 24))
     }
     .invoiceLiquidBackground()
 }
+

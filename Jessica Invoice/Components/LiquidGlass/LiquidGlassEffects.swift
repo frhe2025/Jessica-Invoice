@@ -7,6 +7,7 @@
 import SwiftUI
 
 // MARK: - Liquid Glass Container (FIXED - Proper generic implementation)
+@available(iOS 18.0, *)
 struct LiquidGlassContainer<Content: View>: View {
     let content: Content
     let style: ContainerStyle
@@ -399,7 +400,7 @@ extension View {
 // MARK: - Preview
 #Preview {
     VStack(spacing: 32) {
-        LiquidGlassContainer.primary {
+        LiquidGlassContainer(style: .primary) {
             VStack {
                 Text("Primary Container")
                     .font(.headline)
@@ -410,7 +411,7 @@ extension View {
             .padding()
         }
         
-        LiquidGlassContainer.subtle {
+        LiquidGlassContainer(style: .subtle) {
             HStack {
                 Image(systemName: "star.fill")
                     .foregroundStyle(.yellow)
@@ -420,7 +421,7 @@ extension View {
             .padding()
         }
         
-        LiquidGlassContainer.dynamic {
+        LiquidGlassContainer(style: .dynamic) {
             Text("Dynamic Container")
                 .font(.title3.weight(.semibold))
                 .padding()

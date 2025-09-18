@@ -157,7 +157,7 @@ struct SettingsView: View {
                     }
                     
                     // Version Info
-                    GlassCard {
+                    GlassCard(style: .compact) {
                         VStack(spacing: 8) {
                             Text("Jessica Invoice")
                                 .font(.headline)
