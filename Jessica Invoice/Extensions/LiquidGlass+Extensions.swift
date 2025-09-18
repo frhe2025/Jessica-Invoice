@@ -14,6 +14,7 @@
 
 import SwiftUI
 import UIKit
+private typealias SUIFont = SwiftUI.Font
 
 // MARK: - View Extensions for Liquid Glass
 
@@ -28,28 +29,28 @@ extension View {
         adaptiveColor: Bool = true
     ) -> some View {
         LiquidGlassCard(style: style, depth: depth, adaptiveColor: adaptiveColor) {
-            self
+            Group { self }
         }
     }
     
     /// Applies minimal liquid glass styling
     func liquidGlassMinimal() -> some View {
-        LiquidGlassCard(style: .minimal) { self }
+        LiquidGlassCard(style: .minimal) { Group { self } }
     }
     
     /// Applies prominent liquid glass styling
     func liquidGlassProminent() -> some View {
-        LiquidGlassCard(style: .prominent) { self }
+        LiquidGlassCard(style: .prominent) { Group { self } }
     }
     
     /// Applies floating liquid glass styling
     func liquidGlassFloating() -> some View {
-        LiquidGlassCard(style: .floating) { self }
+        LiquidGlassCard(style: .floating) { Group { self } }
     }
     
     /// Applies interactive liquid glass styling
     func liquidGlassInteractive() -> some View {
-        LiquidGlassCard(style: .interactive) { self }
+        LiquidGlassCard(style: .interactive) { Group { self } }
     }
     
     // MARK: - Liquid Background Extensions
@@ -114,8 +115,8 @@ extension View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             header()
-            LiquidGlassCard(style: .adaptive) { 
-                self
+            LiquidGlassCard(style: .adaptive) {
+                Group { self }
                     .padding(.all, 20)
             }
         }
@@ -316,7 +317,7 @@ struct ResponsiveFontModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .font(Font.body.design(.default))
+            .font(SUIFont.body)
     }
 }
 
@@ -618,7 +619,7 @@ struct PerformanceOptimizedLiquidModifier: ViewModifier {
     ScrollView {
         VStack(spacing: 24) {
             Text("Liquid Glass Extensions Demo")
-                .font(Font.largeTitle)
+                .font(SUIFont.largeTitle)
                 .fontWeight(.bold)
                 .liquidGlassProminent()
                 .padding(.all, 20)

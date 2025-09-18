@@ -38,6 +38,13 @@ struct LiquidGlassCard<Content: View>: View {
         self.adaptiveColor = adaptiveColor
         self.content = content()
     }
+
+    init(style: LiquidGlassStyle = .adaptive, depth: LiquidDepth = .medium, adaptiveColor: Bool = true, content: Content) {
+        self.style = style
+        self.depth = depth
+        self.adaptiveColor = adaptiveColor
+        self.content = content
+    }
     
     var body: some View {
         content
@@ -319,3 +326,4 @@ extension LiquidGlassCard {
     }
     .background(.gray.opacity(0.1))
 }
+

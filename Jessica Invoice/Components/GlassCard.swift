@@ -115,7 +115,7 @@ struct GlassCard<Content: View>: View {
 extension View {
     func glassCard(style: GlassCard<Self>.CardStyle = .compact) -> some View {
         GlassCard(style: style) {
-            self
+            Group { self }
         }
     }
 }
