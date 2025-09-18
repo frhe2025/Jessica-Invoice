@@ -28,7 +28,7 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
+            ScrollView(.vertical, showsIndicators: true) {
                 VStack(spacing: 32) {
                     // Header
                     VStack(spacing: 16) {
@@ -45,7 +45,7 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.vertical, 32)
+                    .padding(EdgeInsets(top: 32, leading: 0, bottom: 32, trailing: 0))
                     
                     // Company Information
                     SettingsSection(title: "Företagsinformation", icon: "building.2") {
@@ -171,11 +171,11 @@ struct SettingsView: View {
                                 .font(.caption)
                                 .foregroundStyle(.tertiary)
                         }
-                        .padding(20)
+                        .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 100)
+                .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+                .padding(EdgeInsets(top: 0, leading: 0, bottom: 100, trailing: 0))
             }
             .background(
                 LinearGradient(
@@ -216,7 +216,7 @@ struct SettingsSection<Content: View>: View {
             
             GlassCard {
                 content
-                    .padding(20)
+                    .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
             }
         }
     }
@@ -244,7 +244,7 @@ struct SettingsField: View {
             
             TextField("", text: $text)
                 .textFieldStyle(.plain)
-                .padding(12)
+                .padding(EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12))
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
         }
     }
@@ -289,7 +289,7 @@ struct SettingsPicker<T: Hashable>: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                .padding(12)
+                .padding(EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12))
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
             }
         }
@@ -335,7 +335,7 @@ struct SettingsToggle: View {
             Toggle("", isOn: $isOn)
                 .tint(.purple)
         }
-        .padding(16)
+        .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
 }
@@ -383,7 +383,7 @@ struct SettingsButton: View {
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
             }
-            .padding(16)
+            .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(ScaleButtonStyle())
@@ -393,3 +393,4 @@ struct SettingsButton: View {
 #Preview {
     SettingsView()
 }
+

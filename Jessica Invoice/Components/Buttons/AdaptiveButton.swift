@@ -8,6 +8,12 @@
 
 import SwiftUI
 
+struct AnyShape: Shape {
+    private let _path: @Sendable (CGRect) -> Path
+    init<S: Shape>(_ shape: S) { _path = { rect in shape.path(in: rect) } }
+    func path(in rect: CGRect) -> Path { _path(rect) }
+}
+
 // MARK: - Adaptive Button Types
 enum AdaptiveButtonStyle {
     case primary
@@ -109,7 +115,9 @@ struct AdaptiveButton: View {
             isHovered = hovering
         }
         .accessibilityLabel(title ?? "Button")
-        .accessibilityHint(isLoading ? "Loading" : nil)
+        .if(isLoading) { view in
+            view.accessibilityHint("Loading")
+        }
     }
     
     @ViewBuilder
@@ -148,9 +156,9 @@ struct AdaptiveButton: View {
         switch style {
         case .primary:
             LiquidGlassBackground(
+                colors: [color, color.opacity(0.8), color.opacity(0.6)],
                 intensity: backgroundIntensity,
-                tintColor: color,
-                isAdaptive: true
+                isAnimated: true
             )
             .overlay(
                 shape
@@ -160,9 +168,9 @@ struct AdaptiveButton: View {
             
         case .secondary:
             LiquidGlassBackground(
+                colors: [color.opacity(0.4), color.opacity(0.2)],
                 intensity: 0.8,
-                tintColor: color,
-                isAdaptive: true
+                isAnimated: true
             )
             .overlay(
                 shape
@@ -178,17 +186,17 @@ struct AdaptiveButton: View {
             
         case .floating:
             LiquidGlassBackground(
+                colors: [color, color.opacity(0.7), color.opacity(0.5)],
                 intensity: 1.2,
-                tintColor: color,
-                isAdaptive: true
+                isAnimated: true
             )
             .morphingGlass(intensity: 0.5)
             
         case .pill:
             LiquidGlassBackground(
+                colors: [color, color.opacity(0.7)],
                 intensity: 0.9,
-                tintColor: color,
-                isAdaptive: true
+                isAnimated: true
             )
             .overlay(
                 Capsule()
@@ -199,13 +207,12 @@ struct AdaptiveButton: View {
         case .icon:
             Circle()
                 .fill(.ultraThinMaterial)
-                .liquidGlass(intensity: 0.8, tintColor: color)
             
         case .destructive:
             LiquidGlassBackground(
+                colors: [.red, .red.opacity(0.7)],
                 intensity: 1.0,
-                tintColor: .red,
-                isAdaptive: true
+                isAnimated: true
             )
             .overlay(
                 shape
@@ -215,15 +222,14 @@ struct AdaptiveButton: View {
         }
     }
     
-    @ViewBuilder
-    private var shape: some Shape {
+    private var shape: AnyShape {
         switch style {
         case .pill:
-            Capsule()
+            return AnyShape(Capsule())
         case .icon:
-            Circle()
+            return AnyShape(Circle())
         default:
-            RoundedRectangle(cornerRadius: size.cornerRadius)
+            return AnyShape(RoundedRectangle(cornerRadius: size.cornerRadius))
         }
     }
     
@@ -599,3 +605,4 @@ struct ArrayBuilder<Element> {
         )
     )
 }
+

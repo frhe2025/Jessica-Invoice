@@ -103,13 +103,13 @@ class SettingsViewModel: ObservableObject {
         userDefaults.set(reminderDaysBefore, forKey: "reminderDaysBefore")
         
         // Apply settings immediately
-        applySettings()
+        Task { await applySettings() }
     }
     
-    private func applySettings() {
+    private func applySettings() async {
         // Request notification permissions if enabled
         if enableNotifications {
-            NotificationManager.shared.requestPermissions()
+            await NotificationManager.shared.requestPermissions()
         }
         
         // Apply dark mode setting
@@ -305,3 +305,4 @@ struct ExportData: Codable {
     let exportDate: Date
     let appVersion: String
 }
+

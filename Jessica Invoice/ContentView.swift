@@ -329,7 +329,7 @@ struct CompanySelectorCard: View {
     @EnvironmentObject var companyManager: CompanyManager
     
     var body: some View {
-        LiquidGlassContainer.primary {
+        LiquidCard(.primary) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Aktivt företag")
                     .font(.headline)
@@ -406,7 +406,7 @@ struct DashboardStatCard: View {
     let color: Color
     
     var body: some View {
-        LiquidGlassContainer.subtle {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 12) {
                 Image(systemName: icon)
                     .font(.title2)
@@ -429,7 +429,7 @@ struct CompanyManagementSection: View {
     @EnvironmentObject var companyManager: CompanyManager
     
     var body: some View {
-        LiquidGlassContainer.subtle {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Företagshantering")
                     .font(.headline)
@@ -564,6 +564,33 @@ struct InvoiceHistoryData: Codable {
     let invoices: [Invoice]
     let exportedAt: Date
     let totalCount: Int
+}
+
+// MARK: - Lightweight Liquid Card Fallback
+private enum LiquidCardStyle { case primary, subtle }
+
+private struct LiquidCard<Content: View>: View {
+    let style: LiquidCardStyle
+    let content: Content
+    
+    init(_ style: LiquidCardStyle = .subtle, @ViewBuilder content: () -> Content) {
+        self.style = style
+        self.content = content()
+    }
+    
+    var body: some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.ultraThinMaterial)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.08))
+            )
+            .shadow(color: Color.black.opacity(style == .primary ? 0.2 : 0.1), radius: style == .primary ? 12 : 6, x: 0, y: 4)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
 }
 
 // MARK: - Notifications

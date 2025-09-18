@@ -103,9 +103,9 @@ struct Jessica_InvoiceApp: App {
         await notificationManager.updateBadgeCount()
         
         // Refresh data if needed
-        if let selectedCompany = companyManager.selectedCompany {
-            await invoiceViewModel.loadInvoices(for: selectedCompany)
-            await productViewModel.loadProducts(for: selectedCompany)
+        if let activeCompany = companyManager.activeCompany {
+            await invoiceViewModel.loadInvoices(for: activeCompany)
+            await productViewModel.loadProducts(for: activeCompany)
         }
     }
     

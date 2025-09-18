@@ -58,19 +58,18 @@ extension Color {
     
     // MARK: - Category Colors
     static func categoryColor(for category: ProductCategory) -> Color {
-        switch category {
-        case .service:
-            return .blue
-        case .product:
-            return .green
-        case .digital:
-            return .purple
-        case .consultation:
-            return .orange
-        case .subscription:
-            return .indigo
-        case .other:
-            return .gray
+        let name = String(describing: category)
+        switch name {
+        case "service": return .blue
+        case "product": return .green
+        case "consultation": return .orange
+        case "development": return .purple
+        case "design": return .pink
+        case "maintenance": return .teal
+        case "digital": return .purple
+        case "subscription": return .indigo
+        case "other": return .gray
+        default: return .gray
         }
     }
     
@@ -173,3 +172,4 @@ enum TaskPriority: String, CaseIterable, Codable {
         }
     }
 }
+

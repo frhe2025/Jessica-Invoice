@@ -91,9 +91,9 @@ struct LiquidButtonStyle: ButtonStyle {
         LinearGradient(
             colors: [
                 .clear,
-                .white.opacity(0.3),
+                Color.white.opacity(0.3),
                 .clear,
-                .white.opacity(0.2),
+                Color.white.opacity(0.2),
                 .clear
             ],
             startPoint: .init(x: -0.3 + animationPhase, y: -0.3 + animationPhase),
@@ -257,8 +257,8 @@ enum LiquidButtonVariant {
             ]
         case .tertiary:
             return [
-                (colorScheme == .dark ? .white : .black).opacity(0.2 * opacity),
-                (colorScheme == .dark ? .white : .black).opacity(0.1 * opacity)
+                (colorScheme == .dark ? Color.white : Color.black).opacity(0.2 * opacity),
+                (colorScheme == .dark ? Color.white : Color.black).opacity(0.1 * opacity)
             ]
         case .ghost:
             return [
@@ -267,8 +267,8 @@ enum LiquidButtonVariant {
             ]
         case .adaptive:
             return [
-                .white.opacity(0.4 * opacity),
-                .white.opacity(0.2 * opacity)
+                Color.white.opacity(0.4 * opacity),
+                Color.white.opacity(0.2 * opacity)
             ]
         default:
             return [.clear]

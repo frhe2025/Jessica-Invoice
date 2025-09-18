@@ -202,7 +202,7 @@ struct LiquidWaveBackground: View {
         }
         .onAppear {
             withAnimation(.linear(duration: 1.0).repeatForever(autoreverses: false)) {
-                phase = .pi * 2
+                phase = Double.pi * 2
             }
         }
     }
@@ -216,9 +216,9 @@ struct LiquidWaveBackground: View {
             path.move(to: CGPoint(x: 0, y: midHeight))
             
             for x in stride(from: 0, through: width, by: 1) {
-                let relativeX = x / width
-                let sine = sin(relativeX * .pi * 4 + phase)
-                let y = midHeight + sine * waveAmplitude * height
+                let relativeX = x / width // CGFloat
+                let sine = sin(Double(relativeX) * Double.pi * 4 + phase) // Double
+                let y = midHeight + CGFloat(sine) * CGFloat(waveAmplitude) * height // CGFloat
                 path.addLine(to: CGPoint(x: x, y: y))
             }
             
@@ -333,3 +333,4 @@ extension AuroraBackground {
             )
     }
 }
+

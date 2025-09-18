@@ -212,10 +212,6 @@ extension View {
         self.frame(width: size, height: size)
     }
     
-    func padding(_ edges: Edge.Set, _ length: CGFloat?) -> some View {
-        self.padding(edges, length)
-    }
-    
     func maxWidth(_ width: CGFloat? = .infinity, alignment: Alignment = .center) -> some View {
         self.frame(maxWidth: width, alignment: alignment)
     }
