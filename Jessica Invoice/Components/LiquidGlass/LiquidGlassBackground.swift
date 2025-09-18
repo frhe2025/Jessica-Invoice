@@ -5,15 +5,6 @@
 //  Created by Fredrik Hemlin on 2025-09-16.
 //
 
-
-//
-//  LiquidGlassBackground.swift
-//  Jessica Invoice
-//
-//  📁 PLACERA I: Components/LiquidGlass/
-//  iOS 26 Liquid Glass Background System
-//
-
 import SwiftUI
 
 // MARK: - Liquid Glass Background
@@ -38,16 +29,9 @@ struct LiquidGlassBackground: View {
     
     var body: some View {
         ZStack {
-            // Base gradient layer
             baseGradientLayer
-            
-            // Liquid mesh overlay
             liquidMeshOverlay
-            
-            // Depth enhancement
             depthEnhancementLayer
-            
-            // Noise texture (iOS 26 feature)
             if #available(iOS 18.0, *) {
                 noiseTextureLayer
             }
@@ -140,16 +124,13 @@ struct LiquidGlassBackground: View {
     // MARK: - Noise Texture Layer (iOS 18+)
     @available(iOS 18.0, *)
     private var noiseTextureLayer: some View {
-        // Simulated noise texture using small circles
         Canvas { context, size in
             let spacing: CGFloat = 3
             let opacity: Double = colorScheme == .dark ? 0.015 : 0.03
-            
             for x in stride(from: 0, to: size.width, by: spacing) {
                 for y in stride(from: 0, to: size.height, by: spacing) {
                     let randomOpacity = Double.random(in: 0...opacity)
                     let color = Color.white.opacity(randomOpacity)
-                    
                     context.fill(
                         Path(ellipseIn: CGRect(x: x, y: y, width: 1, height: 1)),
                         with: .color(color)
@@ -167,7 +148,6 @@ struct LiquidGlassBackground: View {
         ) {
             animationOffset = 1.0
         }
-        
         withAnimation(
             .linear(duration: 15.0)
             .repeatForever(autoreverses: true)
@@ -183,27 +163,22 @@ extension LiquidGlassBackground {
         colors: [.blue, .indigo, .cyan],
         intensity: 0.06
     )
-    
     static let products = LiquidGlassBackground(
         colors: [.green, .mint, .teal],
         intensity: 0.05
     )
-    
     static let history = LiquidGlassBackground(
         colors: [.orange, .yellow, .red],
         intensity: 0.07
     )
-    
     static let settings = LiquidGlassBackground(
         colors: [.purple, .pink, .indigo],
         intensity: 0.06
     )
-    
     static let dashboard = LiquidGlassBackground(
         colors: [.blue, .purple, .indigo, .cyan],
         intensity: 0.08
     )
-    
     static let neutral = LiquidGlassBackground(
         colors: [.gray, .secondary],
         intensity: 0.03,
@@ -272,8 +247,8 @@ struct AdaptiveLiquidMaterial: View {
     private var adaptiveColors: [Color] {
         [
             dominantColor,
-            dominantColor.lighter(by: 0.3),
-            dominantColor.darker(by: 0.2)
+            dominantColor.opacity(0.7),
+            dominantColor.opacity(0.9)
         ]
     }
     
@@ -311,26 +286,6 @@ extension View {
     
     func adaptiveLiquidBackground(baseColor: Color = .accentColor, intensity: Double = 0.1) -> some View {
         background(AdaptiveLiquidMaterial(baseColor: baseColor, intensity: intensity))
-    }
-}
-
-// MARK: - Color Extensions for Liquid Effects
-extension Color {
-    func lighter(by percentage: Double = 0.2) -> Color {
-        return self.opacity(1 - percentage)
-    }
-    
-    func darker(by percentage: Double = 0.2) -> Color {
-        let uiColor = UIColor(self)
-        var hue: CGFloat = 0
-        var saturation: CGFloat = 0
-        var brightness: CGFloat = 0
-        var alpha: CGFloat = 0
-        
-        uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
-        brightness *= CGFloat(1 - percentage)
-        
-        return Color(UIColor(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha))
     }
 }
 

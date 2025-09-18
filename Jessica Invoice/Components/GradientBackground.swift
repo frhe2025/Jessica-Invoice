@@ -71,8 +71,8 @@ extension GradientBackground {
     )
 }
 
-// MARK: - Animated Gradient Background
-struct AnimatedGradientBackground: View {
+// MARK: - Simple Animated Gradient Background (renamed to avoid ambiguity)
+struct SimpleAnimatedGradientBackground: View {
     let colors: [Color]
     let duration: Double
     @State private var animationOffset: CGFloat = 0

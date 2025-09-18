@@ -86,30 +86,44 @@ class DataManager: ObservableObject {
     }
     
     private func createSampleInvoices() -> [Invoice] {
-        let sampleCustomer = Customer(
+        // Create a sample client using your Client/Address model
+        let sampleClient = Client(
             name: "Exempel AB",
-            organizationNumber: "556123-4567",
+            contactPerson: "Anna Andersson",
+            email: "info@exempel.se",
+            phone: "08-123 45 67",
             address: Address(
                 street: "Testgatan 1",
                 postalCode: "123 45",
                 city: "Stockholm",
                 country: "Sverige"
-            )
+            ),
+            organizationNumber: "556123-4567",
+            vatNumber: "SE556123456701"
         )
         
+        // Create sample invoice items using your InvoiceItem model
+        let sampleItems: [InvoiceItem] = [
+            InvoiceItem(
+                description: "Konsulttjänst",
+                quantity: 10.0,
+                unit: "timme",
+                unitPrice: 1000.0,
+                vatRate: 25.0
+            )
+        ]
+        
+        // Create an Invoice with your current model
         let sampleInvoice = Invoice(
-            invoiceNumber: "2025-001",
-            customer: sampleCustomer,
-            issueDate: Date(),
-            dueDate: Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date(),
-            items: [
-                InvoiceItem(
-                    description: "Konsulttjänst",
-                    quantity: 10.0,
-                    unitPrice: 1000.0,
-                    vatRate: 25.0
-                )
-            ]
+            number: "2025-001",
+            date: Date(),
+            client: sampleClient,
+            items: sampleItems,
+            status: .sent,
+            notes: "Tack för ert förtroende.",
+            paymentTerms: 30,
+            currency: "SEK",
+            vatRate: 25.0
         )
         
         return [sampleInvoice]
@@ -142,17 +156,19 @@ class DataManager: ObservableObject {
         return [
             Product(
                 name: "Konsulttjänst",
+                description: "Rådgivning och konsultation",
                 price: 1000.0,
-                vatRate: 25.0,
+                unit: "timme",
                 category: .service,
-                unit: "timme"
+                vatRate: 25.0
             ),
             Product(
                 name: "Projektledning",
+                description: "Planering och koordinering",
                 price: 1200.0,
-                vatRate: 25.0,
+                unit: "timme",
                 category: .service,
-                unit: "timme"
+                vatRate: 25.0
             )
         ]
     }

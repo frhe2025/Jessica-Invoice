@@ -7,45 +7,6 @@
 
 import Foundation
 
-// MARK: - Invoice Status
-enum InvoiceStatus: String, CaseIterable, Codable, Hashable {
-    case draft = "draft"
-    case sent = "sent"
-    case paid = "paid"
-    case overdue = "overdue"
-    case cancelled = "cancelled"
-    
-    var displayName: String {
-        switch self {
-        case .draft: return "Utkast"
-        case .sent: return "Skickad"
-        case .paid: return "Betald"
-        case .overdue: return "Försenad"
-        case .cancelled: return "Avbruten"
-        }
-    }
-    
-    var color: String {
-        switch self {
-        case .draft: return "gray"
-        case .sent: return "blue"
-        case .paid: return "green"
-        case .overdue: return "red"
-        case .cancelled: return "gray"
-        }
-    }
-    
-    var systemImage: String {
-        switch self {
-        case .draft: return "doc.text"
-        case .sent: return "paperplane"
-        case .paid: return "checkmark.circle"
-        case .overdue: return "exclamationmark.triangle"
-        case .cancelled: return "xmark.circle"
-        }
-    }
-}
-
 // MARK: - Invoice Model
 struct Invoice: Identifiable, Codable, Hashable, Equatable {
     let id = UUID()
@@ -75,10 +36,6 @@ struct Invoice: Identifiable, Codable, Hashable, Equatable {
     
     var formattedNumber: String {
         "FAK-\(number)"
-    }
-    
-    var isOverdue: Bool {
-        Date() > dueDate && status == .sent
     }
     
     init(

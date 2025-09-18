@@ -61,15 +61,15 @@ struct GlassCard<Content: View>: View {
     }
     
     // MARK: - Static Factory Methods (FIXED - Proper generic syntax)
-    static func compact<T: View>(@ViewBuilder content: () -> T) -> some View {
+    static func compact<T: View>(@ViewBuilder content: @escaping () -> T) -> GlassCard<T> {
         GlassCard<T>(style: .compact, content: content)
     }
     
-    static func prominent<T: View>(@ViewBuilder content: () -> T) -> some View {
+    static func prominent<T: View>(@ViewBuilder content: @escaping () -> T) -> GlassCard<T> {
         GlassCard<T>(style: .prominent, content: content)
     }
     
-    static func floating<T: View>(@ViewBuilder content: () -> T) -> some View {
+    static func floating<T: View>(@ViewBuilder content: @escaping () -> T) -> GlassCard<T> {
         GlassCard<T>(style: .floating, content: content)
     }
     

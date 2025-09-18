@@ -13,6 +13,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 // MARK: - View Extensions for Liquid Glass
 
@@ -33,22 +34,22 @@ extension View {
     
     /// Applies minimal liquid glass styling
     func liquidGlassMinimal() -> some View {
-        LiquidGlassCard.minimal { self }
+        LiquidGlassCard(style: .minimal) { self }
     }
     
     /// Applies prominent liquid glass styling
     func liquidGlassProminent() -> some View {
-        LiquidGlassCard.prominent { self }
+        LiquidGlassCard(style: .prominent) { self }
     }
     
     /// Applies floating liquid glass styling
     func liquidGlassFloating() -> some View {
-        LiquidGlassCard.floating { self }
+        LiquidGlassCard(style: .floating) { self }
     }
     
     /// Applies interactive liquid glass styling
     func liquidGlassInteractive() -> some View {
-        LiquidGlassCard.interactive { self }
+        LiquidGlassCard(style: .interactive) { self }
     }
     
     // MARK: - Liquid Background Extensions
@@ -113,7 +114,10 @@ extension View {
     ) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             header()
-            LiquidGlassCard.adaptive { self.padding(20) }
+            LiquidGlassCard(style: .adaptive) { 
+                self
+                    .padding(.all, 20)
+            }
         }
     }
     
@@ -122,13 +126,19 @@ extension View {
         isFirst: Bool = false,
         isLast: Bool = false
     ) -> some View {
-        self.padding(.horizontal, 16)
+        self
+            .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(
                 Rectangle()
                     .fill(.ultraThinMaterial)
-                    .cornerRadius(isFirst ? 12 : 0, corners: [.topLeft, .topRight])
-                    .cornerRadius(isLast ? 12 : 0, corners: [.bottomLeft, .bottomRight])
+                    .modifier(
+                        _ConditionalCornerRadiusModifier(
+                            radius: 12,
+                            isTop: isFirst,
+                            isBottom: isLast
+                        )
+                    )
             )
     }
     
@@ -165,6 +175,21 @@ extension View {
     /// Applies iPhone-specific liquid styling
     func liquidiPhoneOptimized() -> some View {
         self.modifier(iPhoneOptimizationModifier())
+    }
+}
+
+// Internal modifier to support conditional corner radius on list items
+private struct _ConditionalCornerRadiusModifier: ViewModifier {
+    let radius: CGFloat
+    let isTop: Bool
+    let isBottom: Bool
+    
+    func body(content: Content) -> some View {
+        var corners: UIRectCorner = []
+        if isTop { corners.formUnion([.topLeft, .topRight]) }
+        if isBottom { corners.formUnion([.bottomLeft, .bottomRight]) }
+        if corners.isEmpty { return AnyView(content) }
+        return AnyView(content.cornerRadius(radius, corners: corners))
     }
 }
 
@@ -251,6 +276,28 @@ struct LiquidShimmerModifier: ViewModifier {
     }
 }
 
+// MARK: - Corner Radius for Specific Corners
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
+    }
+}
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
 // MARK: - Responsive Design Modifiers
 
 struct ResponsivePaddingModifier: ViewModifier {
@@ -258,8 +305,8 @@ struct ResponsivePaddingModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .padding(.horizontal, horizontalSizeClass == .compact ? 16 : 24)
-            .padding(.vertical, horizontalSizeClass == .compact ? 12 : 16)
+            .padding([.leading, .trailing], horizontalSizeClass == .compact ? 16 : 24)
+            .padding([.top, .bottom], horizontalSizeClass == .compact ? 12 : 16)
     }
 }
 
@@ -269,9 +316,7 @@ struct ResponsiveFontModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .font(.body)
-            .fontDesign(.default)
-            .dynamicTypeSize(dynamicTypeSize)
+            .font(Font.body.design(.default))
     }
 }
 
@@ -317,6 +362,29 @@ struct iPhoneOptimizationModifier: ViewModifier {
         } else {
             content
         }
+    }
+}
+
+// MARK: - Color Utilities
+extension Color {
+    /// Approximate check if the color appears light, used for contrast decisions
+    var isLight: Bool {
+        #if canImport(UIKit)
+        let ui = UIColor(self)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        if ui.getRed(&r, green: &g, blue: &b, alpha: &a) {
+            // Perceived luminance formula
+            let luminance = 0.299 * r + 0.587 * g + 0.114 * b
+            return luminance > 0.6
+        }
+        var white: CGFloat = 0
+        if ui.getWhite(&white, alpha: &a) {
+            return white > 0.6
+        }
+        return true
+        #else
+        return true
+        #endif
     }
 }
 
@@ -550,10 +618,10 @@ struct PerformanceOptimizedLiquidModifier: ViewModifier {
     ScrollView {
         VStack(spacing: 24) {
             Text("Liquid Glass Extensions Demo")
-                .font(.largeTitle)
+                .font(Font.largeTitle)
                 .fontWeight(.bold)
                 .liquidGlassProminent()
-                .padding(20)
+                .padding(.all, 20)
             
             VStack(spacing: 16) {
                 Text("Basic Card")

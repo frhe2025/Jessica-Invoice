@@ -6,6 +6,7 @@
 
 import Foundation
 import UserNotifications
+import UIKit
 
 @MainActor
 class NotificationManager: NSObject, ObservableObject {
@@ -20,6 +21,7 @@ class NotificationManager: NSObject, ObservableObject {
         super.init()
         center.delegate = self
         checkAuthorizationStatus()
+        setupNotificationActions()
     }
     
     // MARK: - Permission Handling
@@ -70,7 +72,7 @@ class NotificationManager: NSObject, ObservableObject {
         
         let content = UNMutableNotificationContent()
         content.title = "Faktura förfaller snart"
-        content.body = "Faktura \(invoice.invoiceNumber) från \(invoice.customer.name) förfaller om \(daysBefore) dagar"
+        content.body = "Faktura \(invoice.number) till \(invoice.client.name) förfaller om \(daysBefore) dagar"
         content.categoryIdentifier = "INVOICE_REMINDER"
         content.sound = .default
         content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
@@ -98,7 +100,7 @@ class NotificationManager: NSObject, ObservableObject {
         
         do {
             try await center.add(request)
-            print("✅ Scheduled reminder for invoice \(invoice.invoiceNumber)")
+            print("✅ Scheduled reminder for invoice \(invoice.number)")
         } catch {
             print("❌ Failed to schedule reminder: \(error)")
         }
@@ -109,7 +111,7 @@ class NotificationManager: NSObject, ObservableObject {
         
         let content = UNMutableNotificationContent()
         content.title = "Försenad faktura"
-        content.body = "Faktura \(invoice.invoiceNumber) från \(invoice.customer.name) är nu försenad"
+        content.body = "Faktura \(invoice.number) till \(invoice.client.name) är nu försenad"
         content.categoryIdentifier = "OVERDUE_INVOICE"
         content.sound = .defaultCritical
         content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
@@ -130,16 +132,42 @@ class NotificationManager: NSObject, ObservableObject {
         
         do {
             try await center.add(request)
-            print("✅ Scheduled overdue notification for invoice \(invoice.invoiceNumber)")
+            print("✅ Scheduled overdue notification for invoice \(invoice.number)")
         } catch {
             print("❌ Failed to schedule overdue notification: \(error)")
+        }
+    }
+    
+    func sendInvoicePaidNotification(_ invoice: Invoice) {
+        guard isEnabled else { return }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Faktura betald"
+        content.body = "Faktura \(invoice.number) från \(invoice.client.name) har markerats som betald"
+        content.categoryIdentifier = "INVOICE_PAID"
+        content.sound = .default
+        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
+        
+        let request = UNNotificationRequest(
+            identifier: "paid_\(invoice.id.uuidString)",
+            content: content,
+            trigger: nil // deliver immediately
+        )
+        
+        center.add(request) { error in
+            if let error = error {
+                print("❌ Failed to send paid notification: \(error)")
+            } else {
+                print("✅ Sent paid notification for invoice \(invoice.number)")
+            }
         }
     }
     
     func cancelInvoiceNotifications(for invoiceId: UUID) async {
         let identifiers = [
             "invoice_reminder_\(invoiceId.uuidString)",
-            "overdue_\(invoiceId.uuidString)"
+            "overdue_\(invoiceId.uuidString)",
+            "paid_\(invoiceId.uuidString)"
         ]
         
         center.removePendingNotificationRequests(withIdentifiers: identifiers)
@@ -192,12 +220,20 @@ class NotificationManager: NSObject, ObservableObject {
             options: []
         )
         
-        center.setNotificationCategories([reminderCategory, overdueCategory])
+        // Paid Invoice Category
+        let paidCategory = UNNotificationCategory(
+            identifier: "INVOICE_PAID",
+            actions: [viewAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        
+        center.setNotificationCategories([reminderCategory, overdueCategory, paidCategory])
     }
 }
 
 // MARK: - UNUserNotificationCenterDelegate (FIXED - Protocol compliance)
-extension NotificationManager: @preconcurrency UNUserNotificationCenterDelegate {
+extension NotificationManager: UNUserNotificationCenterDelegate {
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -267,27 +303,32 @@ extension Invoice {
 extension Invoice {
     static var sampleInvoice: Invoice {
         Invoice(
-            invoiceNumber: "2025-001",
-            customer: Customer(
+            number: "2025-001",
+            date: Date(),
+            client: Client(
                 name: "Test AB",
-                organizationNumber: "556123-4567",
+                contactPerson: "Test Person",
+                email: "test@example.com",
+                phone: "08-123 45 67",
                 address: Address(
                     street: "Testgatan 1",
                     postalCode: "123 45",
                     city: "Stockholm",
                     country: "Sverige"
-                )
+                ),
+                organizationNumber: "556123-4567",
+                vatNumber: "SE556123456701"
             ),
-            issueDate: Date(),
-            dueDate: Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date(),
             items: [
                 InvoiceItem(
                     description: "Test tjänst",
                     quantity: 1,
+                    unit: "st",
                     unitPrice: 1000,
                     vatRate: 25
                 )
-            ]
+            ],
+            status: .sent
         )
     }
 }

@@ -67,19 +67,19 @@ struct LiquidGlassContainer<Content: View>: View {
     }
     
     // MARK: - Static Factory Methods (FIXED)
-    static func primary<T: View>(@ViewBuilder content: () -> T) -> some View {
+    static func primary<T: View>(@ViewBuilder content: @escaping () -> T) -> LiquidGlassContainer<T> {
         LiquidGlassContainer<T>(style: .primary, content: content)
     }
     
-    static func subtle<T: View>(@ViewBuilder content: () -> T) -> some View {
+    static func subtle<T: View>(@ViewBuilder content: @escaping () -> T) -> LiquidGlassContainer<T> {
         LiquidGlassContainer<T>(style: .subtle, content: content)
     }
     
-    static func dynamic<T: View>(@ViewBuilder content: () -> T) -> some View {
+    static func dynamic<T: View>(@ViewBuilder content: @escaping () -> T) -> LiquidGlassContainer<T> {
         LiquidGlassContainer<T>(style: .dynamic, content: content)
     }
     
-    static func breathing<T: View>(@ViewBuilder content: () -> T) -> some View {
+    static func breathing<T: View>(@ViewBuilder content: @escaping () -> T) -> LiquidGlassContainer<T> {
         LiquidGlassContainer<T>(style: .breathing, content: content)
     }
     

@@ -243,20 +243,24 @@ enum LiquidDepth {
 
 // MARK: - Convenience Initializers
 extension LiquidGlassCard {
-    static func minimal<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassCard(style: .minimal, depth: .subtle, content: content)
+    static func minimal<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
+        LiquidGlassCard<ViewContent>(style: .minimal, depth: .subtle, content: content)
     }
     
-    static func prominent<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassCard(style: .prominent, depth: .deep, content: content)
+    static func adaptive<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
+        LiquidGlassCard<ViewContent>(style: .adaptive, depth: .medium, content: content)
     }
     
-    static func floating<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassCard(style: .floating, depth: .floating, content: content)
+    static func prominent<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
+        LiquidGlassCard<ViewContent>(style: .prominent, depth: .deep, content: content)
     }
     
-    static func interactive<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        LiquidGlassCard(style: .interactive, depth: .medium, content: content)
+    static func floating<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
+        LiquidGlassCard<ViewContent>(style: .floating, depth: .floating, content: content)
+    }
+    
+    static func interactive<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
+        LiquidGlassCard<ViewContent>(style: .interactive, depth: .medium, content: content)
     }
 }
 

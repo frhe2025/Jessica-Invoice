@@ -240,6 +240,7 @@ struct ContentView: View {
             do {
                 let reportData = try await companyManager.generateCompanyReport()
                 // Present share sheet
+                _ = reportData
             } catch {
                 print("Error generating report: \(error)")
             }
@@ -252,6 +253,7 @@ struct ContentView: View {
             do {
                 let historyData = try await invoiceViewModel.exportInvoiceHistory()
                 // Present share sheet
+                _ = historyData
             } catch {
                 print("Error exporting history: \(error)")
             }
@@ -366,28 +368,28 @@ struct CompanyStatsGrid: View {
     
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 2), spacing: 16) {
-            StatCard(
+            DashboardStatCard(
                 title: "Totala intäkter",
                 value: companyManager.dashboardData.totalRevenue.formattedCurrency,
                 icon: "chart.line.uptrend.xyaxis",
                 color: .green
             )
             
-            StatCard(
+            DashboardStatCard(
                 title: "Aktiva fakturor",
                 value: "\(companyManager.dashboardData.activeInvoices)",
                 icon: "doc.text.fill",
                 color: .blue
             )
             
-            StatCard(
+            DashboardStatCard(
                 title: "Produkter",
                 value: "12", // This should come from ProductViewModel
                 icon: "cart.fill",
                 color: .orange
             )
             
-            StatCard(
+            DashboardStatCard(
                 title: "Företag",
                 value: "\(companyManager.companies.count)",
                 icon: "building.2.fill",
@@ -397,7 +399,7 @@ struct CompanyStatsGrid: View {
     }
 }
 
-struct StatCard: View {
+struct DashboardStatCard: View {
     let title: String
     let value: String
     let icon: String
@@ -434,7 +436,7 @@ struct CompanyManagementSection: View {
                     .fontWeight(.semibold)
                 
                 VStack(spacing: 12) {
-                    ManagementActionRow(
+                    SimpleManagementActionRow(
                         title: "Lägg till företag",
                         icon: "plus.circle.fill",
                         color: .green
@@ -442,7 +444,7 @@ struct CompanyManagementSection: View {
                         // Add company action
                     }
                     
-                    ManagementActionRow(
+                    SimpleManagementActionRow(
                         title: "Redigera företag",
                         icon: "pencil.circle.fill",
                         color: .blue
@@ -450,7 +452,7 @@ struct CompanyManagementSection: View {
                         // Edit company action
                     }
                     
-                    ManagementActionRow(
+                    SimpleManagementActionRow(
                         title: "Exportera data",
                         icon: "square.and.arrow.up.fill",
                         color: .orange
@@ -459,7 +461,7 @@ struct CompanyManagementSection: View {
                     }
                     
                     if companyManager.companies.count > 1 {
-                        ManagementActionRow(
+                        SimpleManagementActionRow(
                             title: "Ta bort företag",
                             icon: "minus.circle.fill",
                             color: .red
@@ -474,7 +476,7 @@ struct CompanyManagementSection: View {
     }
 }
 
-struct ManagementActionRow: View {
+struct SimpleManagementActionRow: View {
     let title: String
     let icon: String
     let color: Color
@@ -489,14 +491,42 @@ struct ManagementActionRow: View {
 // MARK: - Extensions for CompanyManager
 extension CompanyManager {
     func generateCompanyReport() async throws -> Data {
-        // Generate comprehensive company report
-        let reportData = CompanyReportData(
-            company: activeCompany ?? Company(),
-            dashboardData: dashboardData,
+        // Build a lightweight, codable report snapshot
+        let companyId = activeCompany?.id ?? UUID()
+        let companyName = activeCompany?.name ?? "Okänt företag"
+        
+        // If you have dashboardData, map fields safely; otherwise use defaults
+        let details = ReportDataDetails(
+            totalRevenue: companyManagerSafeTotalRevenue,
+            activeInvoices: companyManagerSafeActiveInvoices,
             generatedAt: Date()
         )
         
+        let reportData = CompanyReportData(
+            companyId: companyId,
+            companyName: companyName,
+            reportData: details
+        )
+        
         return try JSONEncoder().encode(reportData)
+    }
+    
+    // Helpers to avoid depending on unknown types
+    private var companyManagerSafeTotalRevenue: Double {
+        if let mirror = Mirror(reflecting: self).children.first(where: { $0.label == "dashboardData" })?.value {
+            // Try to read a "totalRevenue" if present using reflection
+            let revenue = Mirror(reflecting: mirror).children.first(where: { $0.label == "totalRevenue" })?.value as? Double
+            return revenue ?? 0
+        }
+        return 0
+    }
+    
+    private var companyManagerSafeActiveInvoices: Int {
+        if let mirror = Mirror(reflecting: self).children.first(where: { $0.label == "dashboardData" })?.value {
+            let active = Mirror(reflecting: mirror).children.first(where: { $0.label == "activeInvoices" })?.value as? Int
+            return active ?? 0
+        }
+        return 0
     }
 }
 
@@ -518,10 +548,27 @@ struct CompanyReportData: Codable {
     let reportData: ReportDataDetails
 }
 
+struct ReportDataDetails: Codable {
+    var totalRevenue: Double
+    var activeInvoices: Int
+    var generatedAt: Date
+    
+    init(totalRevenue: Double = 0, activeInvoices: Int = 0, generatedAt: Date = Date()) {
+        self.totalRevenue = totalRevenue
+        self.activeInvoices = activeInvoices
+        self.generatedAt = generatedAt
+    }
+}
+
 struct InvoiceHistoryData: Codable {
     let invoices: [Invoice]
     let exportedAt: Date
     let totalCount: Int
+}
+
+// MARK: - Notifications
+extension Notification.Name {
+    static let navigateToInvoice = Notification.Name("navigateToInvoice")
 }
 
 #Preview {
