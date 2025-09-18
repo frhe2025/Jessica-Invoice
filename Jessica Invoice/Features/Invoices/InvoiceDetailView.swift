@@ -228,7 +228,7 @@ struct InvoiceStatusHeader: View {
     @Binding var showingStatusPicker: Bool
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(spacing: 16) {
                 HStack {
                     Circle()
@@ -268,7 +268,8 @@ struct InvoiceStatusHeader: View {
                 
                 if invoice.status == .sent && !invoice.isOverdue {
                     VStack(spacing: 8) {
-                        ProgressView(value: invoice.daysSince(), total: Double(invoice.paymentTerms))
+                        let daysSince = Calendar.current.dateComponents([.day], from: invoice.date, to: Date()).day ?? 0
+                        ProgressView(value: Double(daysSince), total: Double(invoice.paymentTerms))
                             .tint(invoice.dueDate.daysUntil() <= 7 ? .orange : .blue)
                         
                         HStack {
@@ -295,7 +296,7 @@ struct ClientInformationCard: View {
     let client: Client
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Kunduppgifter")
                     .font(.headline)
@@ -385,7 +386,7 @@ struct InvoiceDetailsCard: View {
     let invoice: Invoice
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Fakturauppgifter")
                     .font(.headline)
@@ -426,7 +427,7 @@ struct InvoiceItemsCard: View {
     let items: [InvoiceItem]
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Artiklar")
                     .font(.headline)
@@ -493,7 +494,7 @@ struct InvoiceTotalsCard: View {
     let invoice: Invoice
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .trailing, spacing: 12) {
                 Text("Summering")
                     .font(.headline)
@@ -540,7 +541,7 @@ struct PaymentInformationCard: View {
     let invoice: Invoice
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Image(systemName: "creditcard")
@@ -583,7 +584,7 @@ struct InvoiceActionsCard: View {
     @Binding var showingDeleteAlert: Bool
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Åtgärder")
                     .font(.headline)
@@ -630,7 +631,10 @@ struct ActionButton: View {
                     .fontWeight(.medium)
             }
             .padding(16)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+            )
         }
         .buttonStyle(ScaleButtonStyle())
     }
@@ -641,7 +645,7 @@ struct InvoiceNotesCard: View {
     let notes: String
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Anmärkningar")
                     .font(.headline)
@@ -724,3 +728,4 @@ struct InvoiceDetailError: LocalizedError {
     )
     .environmentObject(InvoiceViewModel())
 }
+

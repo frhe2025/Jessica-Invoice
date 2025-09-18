@@ -41,40 +41,9 @@ struct LiquidGlassCard<Content: View>: View {
 
     var body: some View {
         Group {
-            #if os(iOS) || os(tvOS) || os(visionOS)
-            if #available(iOS 18.0, tvOS 18.0, visionOS 2.0, *) {
-                content
-                    .padding(paddingForStyle)
-                    .glassEffect(in: .rect(cornerRadius: style.cornerRadius))
-                    .shadow(color: shadowColor, radius: depth.shadowRadius, x: 0, y: depth.shadowOffset)
-                    .scaleEffect(isPressed && !reduceMotion ? 0.98 : 1.0)
-                    .onTapGesture {
-                        guard !reduceMotion else { return }
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { isPressed = true }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isPressed = false }
-                        }
-                    }
-            } else {
-                // Fallback for earlier SDKs
-                content
-                    .padding(paddingForStyle)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: style.cornerRadius))
-                    .shadow(color: shadowColor, radius: depth.shadowRadius, x: 0, y: depth.shadowOffset)
-                    .scaleEffect(isPressed && !reduceMotion ? 0.98 : 1.0)
-                    .onTapGesture {
-                        guard !reduceMotion else { return }
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { isPressed = true }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isPressed = false }
-                        }
-                    }
-            }
-            #else
-            // Other platforms fallback
             content
                 .padding(paddingForStyle)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: style.cornerRadius))
+                .glassEffect(in: .rect(cornerRadius: style.cornerRadius))
                 .shadow(color: shadowColor, radius: depth.shadowRadius, x: 0, y: depth.shadowOffset)
                 .scaleEffect(isPressed && !reduceMotion ? 0.98 : 1.0)
                 .onTapGesture {
@@ -84,7 +53,6 @@ struct LiquidGlassCard<Content: View>: View {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isPressed = false }
                     }
                 }
-            #endif
         }
     }
     

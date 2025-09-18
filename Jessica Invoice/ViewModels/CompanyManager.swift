@@ -667,3 +667,51 @@ enum CompanyManagerError: LocalizedError {
         }
     }
 }
+
+// MARK: - Compatibility Shims for Views
+extension CompanyManager {
+    // Alias used by some views
+    var selectedCompany: Company? { activeCompany }
+    
+    // Convenience flags
+    var hasMultipleCompanies: Bool { companies.count > 1 }
+    
+    // Primary company resolution
+    var primaryCompany: Company? {
+        if let explicit = companies.first(where: { $0.isPrimaryCompany }) { return explicit }
+        return companies.first
+    }
+    
+    // View-facing selectors
+    func selectCompany(_ company: Company) {
+        switchToCompany(company)
+    }
+    
+    // Add company helper used by some sheets
+    func addCompany(_ company: Company) async throws {
+        try await saveCompany(company)
+        await loadDashboardData()
+    }
+    
+    // Mark a company as primary and persist ordering
+    func setPrimaryCompany(_ company: Company) async throws {
+        // Clear all primary flags
+        for i in companies.indices { companies[i].isPrimaryCompany = false }
+        // Set primary on the selected company
+        if let index = companies.firstIndex(where: { $0.id == company.id }) {
+            companies[index].isPrimaryCompany = true
+        }
+        // Keep primary first for convenience
+        companies.sort { ($0.isPrimaryCompany ? 0 : 1) < ($1.isPrimaryCompany ? 0 : 1) }
+        
+        // Persist primary company using DataManager for the first company
+        if let first = companies.first {
+            try await dataManager.saveCompany(first)
+        }
+        
+        // Update active company if needed
+        if activeCompany == nil || activeCompany?.id == company.id {
+            activeCompany = company
+        }
+    }
+}

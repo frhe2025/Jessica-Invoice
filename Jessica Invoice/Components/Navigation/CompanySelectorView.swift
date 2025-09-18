@@ -5,7 +5,6 @@
 //  Created by Fredrik Hemlin on 2025-09-16.
 //
 
-
 //
 //  CompanySelectorView.swift
 //  Jessica Invoice
@@ -198,7 +197,7 @@ struct CompanyPickerSheet: View {
                 .padding(.top, 20)
                 .padding(.bottom, 40)
             }
-            .liquidGlassBackground(.settings)
+            .settingsLiquidBackground()
             .navigationTitle("Välj Företag")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -523,7 +522,7 @@ struct AddCompanyView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
-            .liquidGlassBackground(.settings)
+            .settingsLiquidBackground()
             .navigationTitle("Nytt Företag")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -677,7 +676,10 @@ struct LiquidTextField: View {
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(.ultraThinMaterial)
-                        .stroke(isFocused ? .blue.opacity(0.5) : .clear, lineWidth: 1)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(isFocused ? .blue.opacity(0.5) : .clear, lineWidth: 1)
+                        )
                 )
         }
     }

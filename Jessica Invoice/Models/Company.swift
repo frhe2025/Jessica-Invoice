@@ -22,9 +22,11 @@ struct Company: Identifiable, Codable {
     var defaultCurrency: String
     var defaultVatRate: Double
     var logoData: Data?
+    var isPrimaryCompany: Bool
+    var isActive: Bool
     
     private enum CodingKeys: String, CodingKey {
-        case id, name, organizationNumber, vatNumber, address, email, phone, website, bankAccount, defaultPaymentTerms, defaultCurrency, defaultVatRate, logoData
+        case id, name, organizationNumber, vatNumber, address, email, phone, website, bankAccount, defaultPaymentTerms, defaultCurrency, defaultVatRate, logoData, isPrimaryCompany, isActive
     }
     
     init(from decoder: Decoder) throws {
@@ -41,6 +43,8 @@ struct Company: Identifiable, Codable {
         defaultCurrency = try container.decode(String.self, forKey: .defaultCurrency)
         defaultVatRate = try container.decode(Double.self, forKey: .defaultVatRate)
         logoData = try container.decodeIfPresent(Data.self, forKey: .logoData)
+        isPrimaryCompany = (try? container.decode(Bool.self, forKey: .isPrimaryCompany)) ?? false
+        isActive = (try? container.decode(Bool.self, forKey: .isActive)) ?? true
     }
     
     func encode(to encoder: Encoder) throws {
@@ -58,6 +62,8 @@ struct Company: Identifiable, Codable {
         try container.encode(defaultCurrency, forKey: .defaultCurrency)
         try container.encode(defaultVatRate, forKey: .defaultVatRate)
         try container.encodeIfPresent(logoData, forKey: .logoData)
+        try container.encode(isPrimaryCompany, forKey: .isPrimaryCompany)
+        try container.encode(isActive, forKey: .isActive)
     }
     
     var hasCompletedSetup: Bool {
@@ -79,7 +85,9 @@ struct Company: Identifiable, Codable {
         defaultPaymentTerms: Int = 30,
         defaultCurrency: String = "SEK",
         defaultVatRate: Double = 25.0,
-        logoData: Data? = nil
+        logoData: Data? = nil,
+        isPrimaryCompany: Bool = false,
+        isActive: Bool = true
     ) {
         self.name = name
         self.organizationNumber = organizationNumber
@@ -93,6 +101,8 @@ struct Company: Identifiable, Codable {
         self.defaultCurrency = defaultCurrency
         self.defaultVatRate = defaultVatRate
         self.logoData = logoData
+        self.isPrimaryCompany = isPrimaryCompany
+        self.isActive = isActive
     }
 }
 
@@ -156,3 +166,4 @@ enum Currency: String, CaseIterable, Codable {
         }
     }
 }
+

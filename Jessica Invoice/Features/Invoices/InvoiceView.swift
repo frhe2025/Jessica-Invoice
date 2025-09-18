@@ -26,7 +26,7 @@ struct InvoiceView: View {
                         heroSection
                         
                         // Company Context Indicator
-                        if let company = companyManager.selectedCompany {
+                        if let company = companyManager.activeCompany {
                             companyContextSection(company: company)
                         }
                         
@@ -58,8 +58,8 @@ struct InvoiceView: View {
                 setupInitialData()
                 startHeroAnimation()
             }
-            .onChange(of: companyManager.selectedCompany) { _, newCompany in
-                if let company = newCompany {
+            .onChange(of: companyManager.activeCompany?.id) { _ in
+                if let company = companyManager.activeCompany {
                     Task {
                         await loadCompanyData(company)
                     }
@@ -73,7 +73,7 @@ struct InvoiceView: View {
     
     // MARK: - Hero Section
     private var heroSection: some View {
-        LiquidGlassCard.prominent {
+        LiquidCard(.primary) {
             VStack(spacing: 24) {
                 // Animated Icon with Liquid Effect
                 ZStack {
@@ -129,7 +129,7 @@ struct InvoiceView: View {
     
     // MARK: - Company Context Section
     private func companyContextSection(company: Company) -> some View {
-        LiquidGlassCard.interactive {
+        LiquidCard(.primary) {
             HStack(spacing: 16) {
                 // Company Avatar with Liquid Animation
                 ZStack {
@@ -160,10 +160,6 @@ struct InvoiceView: View {
                         Text("Fakturerar som")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        
-                        if company.isPrimaryCompany {
-                            primaryCompanyBadge
-                        }
                     }
                     
                     Text(company.name)
@@ -187,7 +183,7 @@ struct InvoiceView: View {
             // Section Header
             LiquidSectionHeader(
                 title: "Översikt",
-                subtitle: "Statistik för \(companyManager.selectedCompany?.name ?? "företag")",
+                subtitle: "Statistik för \(companyManager.activeCompany?.name ?? "företag")",
                 icon: "chart.bar.fill"
             )
             
@@ -300,7 +296,7 @@ struct InvoiceView: View {
                 action: { /* Navigate to history */ }
             )
             
-            LiquidGlassCard.adaptive {
+            LiquidCard(.subtle) {
                 VStack(spacing: 0) {
                     ForEach(Array(dashboardViewModel.recentInvoices.prefix(3).enumerated()), id: \.element.id) { index, invoice in
                         LiquidInvoiceRow(invoice: invoice) {
@@ -382,7 +378,7 @@ struct InvoiceView: View {
     }
     
     private func setupInitialData() {
-        if let company = companyManager.selectedCompany {
+        if let company = companyManager.activeCompany {
             Task {
                 await loadCompanyData(company)
             }
@@ -394,7 +390,7 @@ struct InvoiceView: View {
     }
     
     private func refreshDashboardData() async {
-        if let company = companyManager.selectedCompany {
+        if let company = companyManager.activeCompany {
             await loadCompanyData(company)
         }
     }
@@ -509,7 +505,7 @@ struct LiquidStatCard: View {
     @State private var isVisible = false
     
     var body: some View {
-        LiquidGlassCard.interactive {
+        LiquidCard(.primary) {
             VStack(alignment: .leading, spacing: 12) {
                 // Header with icon and change indicator
                 HStack {
@@ -555,10 +551,10 @@ struct LiquidStatCard: View {
             Text(change)
                 .font(.caption)
         }
-        .foregroundStyle(isPositive ? .green : .red)
+        .foregroundStyle(isPositive ? Color.green : Color.red)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
-        .background((isPositive ? .green : .red).opacity(0.1))
+        .background((isPositive ? Color.green : Color.red).opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 4))
     }
 }
@@ -578,10 +574,7 @@ struct LiquidActionCard: View {
     
     var body: some View {
         Button(action: action) {
-            LiquidGlassCard(
-                style: cardStyle,
-                depth: .medium
-            ) {
+            LiquidCard(style == .primary ? .primary : .subtle) {
                 VStack(spacing: 16) {
                     // Icon
                     ZStack {
@@ -613,14 +606,6 @@ struct LiquidActionCard: View {
         .liquidButtonStyle(variant: .ghost, size: .large)
     }
     
-    private var cardStyle: LiquidGlassStyle {
-        switch style {
-        case .primary: return .prominent
-        case .secondary: return .adaptive
-        case .tertiary: return .minimal
-        }
-    }
-    
     private var iconBackground: Color {
         switch style {
         case .primary: return color.opacity(0.2)
@@ -630,7 +615,7 @@ struct LiquidActionCard: View {
     }
     
     private var iconForeground: Color {
-        color.gradient
+        color
     }
 }
 
@@ -708,7 +693,7 @@ struct LiquidSuggestionCard: View {
     let suggestion: SmartSuggestion
     
     var body: some View {
-        LiquidGlassCard.interactive {
+        LiquidCard(.primary) {
             HStack(spacing: 16) {
                 // Icon
                 Image(systemName: suggestion.type.icon)
@@ -825,3 +810,4 @@ struct InvoiceStatistics {
         .environmentObject(CompanyManager())
         .environmentObject(InvoiceViewModel())
 }
+

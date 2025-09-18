@@ -121,14 +121,14 @@ struct CompanyManagementView: View {
                 
                 OverviewCard(
                     title: "Aktivt företag",
-                    value: companyManager.selectedCompany?.name.prefix(10).appending("...") ?? "Inget",
+                    value: { let name = companyManager.selectedCompany?.name ?? "Inget"; return name.count > 10 ? String(name.prefix(10)) + "..." : name }(),
                     icon: "checkmark.circle",
                     color: .green
                 )
                 
                 OverviewCard(
                     title: "Primärt företag",
-                    value: companyManager.primaryCompany?.name.prefix(10).appending("...") ?? "Inget",
+                    value: { let name = companyManager.primaryCompany?.name ?? "Inget"; return name.count > 10 ? String(name.prefix(10)) + "..." : name }(),
                     icon: "star.circle",
                     color: .orange
                 )

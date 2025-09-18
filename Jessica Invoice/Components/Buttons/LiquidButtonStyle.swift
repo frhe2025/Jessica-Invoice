@@ -199,7 +199,7 @@ enum LiquidButtonVariant {
         case .secondary:
             return .clear
         case .tertiary:
-            return (colorScheme == .dark ? .white : .black).opacity(0.05 * pressedOpacity)
+            return (colorScheme == .dark ? Color.white : Color.black).opacity(0.05 * pressedOpacity)
         case .destructive:
             return .red.opacity(pressedOpacity)
         case .ghost:
@@ -212,13 +212,13 @@ enum LiquidButtonVariant {
     func foregroundColor(for colorScheme: ColorScheme) -> Color {
         switch self {
         case .primary, .destructive:
-            return .white
+            return Color.white
         case .secondary:
-            return .accentColor
+            return Color.accentColor
         case .tertiary, .adaptive:
-            return .primary
+            return Color.primary
         case .ghost:
-            return .secondary
+            return Color.secondary
         }
     }
     
@@ -262,8 +262,8 @@ enum LiquidButtonVariant {
             ]
         case .ghost:
             return [
-                .secondary.opacity(0.3 * opacity),
-                .secondary.opacity(0.1 * opacity)
+                Color.secondary.opacity(0.3 * opacity),
+                Color.secondary.opacity(0.1 * opacity)
             ]
         case .adaptive:
             return [

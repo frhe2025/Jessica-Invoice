@@ -607,10 +607,46 @@ struct PerformanceOptimizedLiquidModifier: ViewModifier {
             .liquidGlassCard(adaptiveColor: isVisible)
             .onAppear { isVisible = true }
             .onDisappear { isVisible = false }
-            .onChange(of: scenePhase) { _, newPhase in
+            .onChange(of: scenePhase) { newPhase in
                 // Reduce effects when app is in background
                 isVisible = newPhase == .active
             }
+    }
+}
+
+extension Color {
+    func lighter(by amount: CGFloat) -> Color {
+        #if canImport(UIKit)
+        let ui = UIColor(self)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        if ui.getRed(&r, green: &g, blue: &b, alpha: &a) {
+            return Color(red: min(r + amount, 1.0), green: min(g + amount, 1.0), blue: min(b + amount, 1.0))
+        }
+        var white: CGFloat = 0
+        if ui.getWhite(&white, alpha: &a) {
+            return Color(white: min(white + amount, 1.0))
+        }
+        return self
+        #else
+        return self
+        #endif
+    }
+    
+    func darker(by amount: CGFloat) -> Color {
+        #if canImport(UIKit)
+        let ui = UIColor(self)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        if ui.getRed(&r, green: &g, blue: &b, alpha: &a) {
+            return Color(red: max(r - amount, 0.0), green: max(g - amount, 0.0), blue: max(b - amount, 0.0))
+        }
+        var white: CGFloat = 0
+        if ui.getWhite(&white, alpha: &a) {
+            return Color(white: max(white - amount, 0.0))
+        }
+        return self
+        #else
+        return self
+        #endif
     }
 }
 

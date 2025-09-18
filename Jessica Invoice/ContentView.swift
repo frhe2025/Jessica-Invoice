@@ -81,7 +81,6 @@ struct ContentView: View {
     }
     
     // MARK: - Navigation Bar
-    @ViewBuilder
     private var currentNavigationBar: LiquidNavigationBar? {
         switch selectedTab {
         case 0:
@@ -566,33 +565,6 @@ struct InvoiceHistoryData: Codable {
     let totalCount: Int
 }
 
-// MARK: - Lightweight Liquid Card Fallback
-private enum LiquidCardStyle { case primary, subtle }
-
-private struct LiquidCard<Content: View>: View {
-    let style: LiquidCardStyle
-    let content: Content
-    
-    init(_ style: LiquidCardStyle = .subtle, @ViewBuilder content: () -> Content) {
-        self.style = style
-        self.content = content()
-    }
-    
-    var body: some View {
-        content
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(.ultraThinMaterial)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.08))
-            )
-            .shadow(color: Color.black.opacity(style == .primary ? 0.2 : 0.1), radius: style == .primary ? 12 : 6, x: 0, y: 4)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-}
-
 // MARK: - Notifications
 extension Notification.Name {
     static let navigateToInvoice = Notification.Name("navigateToInvoice")
@@ -604,3 +576,4 @@ extension Notification.Name {
         .environmentObject(ProductViewModel())
         .environmentObject(SettingsViewModel())
 }
+

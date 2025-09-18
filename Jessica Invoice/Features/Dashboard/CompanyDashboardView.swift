@@ -51,7 +51,7 @@ struct CompanyDashboardView: View {
     
     // MARK: - Header
     private var dashboardHeader: some View {
-        LiquidGlassCard.prominent {
+        LiquidCard(.primary) {
             VStack(spacing: 16) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
@@ -130,7 +130,7 @@ struct CompanyDashboardView: View {
     
     // MARK: - Revenue Chart
     private var revenueChartSection: some View {
-        LiquidGlassCard.adaptive {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
@@ -198,7 +198,7 @@ struct CompanyDashboardView: View {
     
     // MARK: - Quick Actions
     private var quickActionsSection: some View {
-        LiquidGlassCard.adaptive {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Snabbåtgärder")
                     .font(.headline)
@@ -236,7 +236,7 @@ struct CompanyDashboardView: View {
     
     // MARK: - Recent Activity
     private var recentActivitySection: some View {
-        LiquidGlassCard.adaptive {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Text("Senaste aktivitet")
@@ -266,7 +266,7 @@ struct CompanyDashboardView: View {
     
     // MARK: - Insights
     private var insightsSection: some View {
-        LiquidGlassCard.adaptive {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Image(systemName: "lightbulb.fill")
@@ -306,10 +306,7 @@ struct MetricCard: View {
 
     var body: some View {
         Button(action: action) {
-            LiquidGlassCard(
-                style: isSelected ? .prominent : .adaptive,
-                depth: isSelected ? .deep : .medium
-            ) {
+            LiquidCard(isSelected ? .primary : .subtle) {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Image(systemName: icon)
@@ -554,3 +551,4 @@ struct CompanyRow: View {
         .environmentObject(InvoiceViewModel())
         .environmentObject(ProductViewModel())
 }
+

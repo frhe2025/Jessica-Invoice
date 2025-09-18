@@ -120,7 +120,7 @@ struct HistoryView: View {
                     }
                     
                     // Search and Filter
-                    GlassCard {
+                    LiquidCard(.subtle) {
                         VStack(spacing: 16) {
                             HStack(spacing: 12) {
                                 Image(systemName: "magnifyingglass")
@@ -204,7 +204,7 @@ struct HistoryView: View {
                             }
                         )
                     } else {
-                        GlassCard {
+                        LiquidCard(.subtle) {
                             VStack(spacing: 0) {
                                 ForEach(Array(filteredInvoices.enumerated()), id: \.element.id) { index, invoice in
                                     HistoricalInvoiceRow(invoice: invoice) {
@@ -260,7 +260,7 @@ struct HistoryStatCard: View {
     let subtitle: String
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: icon)
@@ -304,9 +304,19 @@ struct StatusPill: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? color.opacity(0.2) : .ultraThinMaterial)
-                        .stroke(isSelected ? color.opacity(0.3) : .clear, lineWidth: 1)
+                    Group {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(color.opacity(0.2))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(color.opacity(0.3), lineWidth: 1)
+                                )
+                        } else {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(.ultraThinMaterial)
+                        }
+                    }
                 )
                 .foregroundStyle(isSelected ? color : .primary)
         }
@@ -328,9 +338,19 @@ struct DateRangePill: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? .blue.opacity(0.2) : .ultraThinMaterial)
-                        .stroke(isSelected ? .blue.opacity(0.3) : .clear, lineWidth: 1)
+                    Group {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.blue.opacity(0.2))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+                                )
+                        } else {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(.ultraThinMaterial)
+                        }
+                    }
                 )
                 .foregroundStyle(isSelected ? .blue : .primary)
         }
@@ -423,7 +443,7 @@ struct HistoryEmptyState: View {
     let onClearFilters: () -> Void
     
     var body: some View {
-        GlassCard {
+        LiquidCard(.subtle) {
             VStack(spacing: 20) {
                 if hasInvoices && !searchText.isEmpty {
                     // No search results
@@ -469,3 +489,4 @@ struct HistoryEmptyState: View {
     HistoryView()
         .environmentObject(InvoiceViewModel())
 }
+
