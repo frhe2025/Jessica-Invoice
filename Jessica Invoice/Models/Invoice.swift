@@ -10,6 +10,7 @@ import Foundation
 // MARK: - Invoice Model
 struct Invoice: Identifiable, Codable, Hashable, Equatable {
     let id = UUID()
+    var companyId: UUID?
     var number: String
     var date: Date
     var dueDate: Date
@@ -39,6 +40,7 @@ struct Invoice: Identifiable, Codable, Hashable, Equatable {
     }
     
     init(
+        companyId: UUID? = nil,
         number: String = "",
         date: Date = Date(),
         client: Client = Client(),
@@ -49,6 +51,7 @@ struct Invoice: Identifiable, Codable, Hashable, Equatable {
         currency: String = "SEK",
         vatRate: Double = 25.0
     ) {
+        self.companyId = companyId
         self.number = number
         self.date = date
         self.dueDate = Calendar.current.date(byAdding: .day, value: paymentTerms, to: date) ?? date
@@ -156,3 +159,4 @@ struct Address: Codable, Hashable {
         self.country = country
     }
 }
+

@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		18FF0F3C2E7C610C00895205 /* CompanyDataSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF0F3B2E7C610C00895205 /* CompanyDataSummary.swift */; };
+		18FF0F3E2E7C63BA00895205 /* UIStubs+Liquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF0F3D2E7C63BA00895205 /* UIStubs+Liquid.swift */; };
+		18FF0F402E7C647300895205 /* PDFGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF0F3F2E7C647300895205 /* PDFGenerator.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		187C2AA02E75CB4A0021A48F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -28,6 +34,9 @@
 		187C2A9F2E75CB4A0021A48F /* Jessica InvoiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Jessica InvoiceTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		187C2AA92E75CB4A0021A48F /* Jessica InvoiceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Jessica InvoiceUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		18FF0F322E7BD52300895205 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		18FF0F3B2E7C610C00895205 /* CompanyDataSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyDataSummary.swift; sourceTree = "<group>"; };
+		18FF0F3D2E7C63BA00895205 /* UIStubs+Liquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStubs+Liquid.swift"; sourceTree = "<group>"; };
+		18FF0F3F2E7C647300895205 /* PDFGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -81,6 +90,9 @@
 				187C2AAC2E75CB4A0021A48F /* Jessica InvoiceUITests */,
 				187C2A932E75CB460021A48F /* Products */,
 				18FF0F322E7BD52300895205 /* Info.plist */,
+				18FF0F3B2E7C610C00895205 /* CompanyDataSummary.swift */,
+				18FF0F3D2E7C63BA00895205 /* UIStubs+Liquid.swift */,
+				18FF0F3F2E7C647300895205 /* PDFGenerator.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -238,6 +250,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18FF0F3C2E7C610C00895205 /* CompanyDataSummary.swift in Sources */,
+				18FF0F3E2E7C63BA00895205 /* UIStubs+Liquid.swift in Sources */,
+				18FF0F402E7C647300895205 /* PDFGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

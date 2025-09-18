@@ -9,6 +9,7 @@ import Foundation
 
 struct Product: Identifiable, Codable, Hashable, Equatable {
     let id = UUID()
+    var companyId: UUID?
     var name: String
     var description: String
     var price: Double
@@ -24,6 +25,7 @@ struct Product: Identifiable, Codable, Hashable, Equatable {
     }
     
     init(
+        companyId: UUID? = nil,
         name: String = "",
         description: String = "",
         price: Double = 0.0,
@@ -34,6 +36,7 @@ struct Product: Identifiable, Codable, Hashable, Equatable {
         createdDate: Date = Date(),
         lastUsed: Date? = nil
     ) {
+        self.companyId = companyId
         self.name = name
         self.description = description
         self.price = price

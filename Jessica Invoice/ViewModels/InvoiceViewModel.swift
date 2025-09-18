@@ -65,7 +65,14 @@ class InvoiceViewModel: ObservableObject {
     
     // MARK: - Invoice Operations
     func createNewInvoice() {
+        let activeCompanyId: UUID? = {
+            if let idString = UserDefaults.standard.string(forKey: "activeCompanyId") {
+                return UUID(uuidString: idString)
+            }
+            return nil
+        }()
         let newInvoice = Invoice(
+            companyId: activeCompanyId,
             number: generateInvoiceNumber(),
             date: Date(),
             client: Client(),

@@ -165,15 +165,21 @@ class CompanyManager: ObservableObject {
     }
     
     private func filterInvoicesForCompany(_ invoices: [Invoice], company: Company) -> [Invoice] {
-        // In a multi-company setup, you'd filter based on company association
-        // For now, return all invoices
-        return invoices
+        // Treat invoices with nil companyId as belonging to the primary company for backward compatibility
+        let primaryId = primaryCompany?.id
+        return invoices.filter { inv in
+            if let cid = inv.companyId { return cid == company.id }
+            return company.id == primaryId
+        }
     }
     
     private func filterProductsForCompany(_ products: [Product], company: Company) -> [Product] {
-        // In a multi-company setup, you'd filter based on company association
-        // For now, return all products
-        return products
+        // Treat products with nil companyId as belonging to the primary company for backward compatibility
+        let primaryId = primaryCompany?.id
+        return products.filter { prod in
+            if let cid = prod.companyId { return cid == company.id }
+            return company.id == primaryId
+        }
     }
     
     private func generateDashboardData(from invoices: [Invoice], products: [Product], timeframe: TimeFrame) -> DashboardData {
@@ -713,5 +719,6 @@ extension CompanyManager {
         if activeCompany == nil || activeCompany?.id == company.id {
             activeCompany = company
         }
+        activeCompany = company
     }
 }

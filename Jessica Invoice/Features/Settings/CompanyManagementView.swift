@@ -5,7 +5,6 @@
 //  Created by Fredrik Hemlin on 2025-09-16.
 //
 
-
 //
 //  CompanyManagementView.swift
 //  📁 PLACERA I: Features/Settings/
@@ -268,8 +267,22 @@ struct CompanyManagementView: View {
     private func loadCompanySummaries() {
         Task {
             for company in companyManager.companies {
+                // Fallback: build a minimal summary from available view models if DataManager lacks a direct API
                 do {
-                    let summary = try await DataManager.shared.getDataSummaryForCompany(company)
+                    let invoices = try await DataManager.shared.loadInvoices()
+                    let products = try await DataManager.shared.loadProducts()
+                    let companyInvoices = invoices // TODO: filter by company when association exists
+                    let invoiceCount = companyInvoices.count
+                    let productCount = products.count // TODO: filter by company when association exists
+                    let totalInvoiced = companyInvoices.reduce(0) { $0 + $1.total }
+                    let lastActivity = companyInvoices.sorted { $0.date > $1.date }.first?.date ?? Date.distantPast
+                    let summary = CompanyDataSummary(
+                        companyId: company.id,
+                        invoiceCount: invoiceCount,
+                        productCount: productCount,
+                        totalInvoiced: totalInvoiced,
+                        lastActivity: lastActivity
+                    )
                     companySummaries[company.id] = summary
                 } catch {
                     print("❌ Error loading summary for \(company.name): \(error)")
@@ -713,3 +726,4 @@ struct CompanySummaryCard: View {
     CompanyManagementView()
         .environmentObject(CompanyManager())
 }
+

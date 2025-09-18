@@ -107,12 +107,12 @@ struct CompanySelectorView: View {
                     .foregroundStyle(.primary)
                     .lineLimit(1)
                 
-                if let company = companyManager.selectedCompany, company.isPrimaryCompany {
+                if let company = companyManager.activeCompany, company.isPrimaryCompany {
                     primaryBadge
                 }
             }
             
-            if let company = companyManager.selectedCompany, !company.organizationNumber.isEmpty {
+            if let company = companyManager.activeCompany, !company.organizationNumber.isEmpty {
                 Text(company.organizationNumber)
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -150,11 +150,11 @@ struct CompanySelectorView: View {
     
     // MARK: - Computed Properties
     private var companyName: String {
-        companyManager.selectedCompany?.name ?? "Välj företag"
+        companyManager.activeCompany?.name ?? "Välj företag"
     }
     
     private var companyInitials: String {
-        companyManager.selectedCompany?.name.prefix(2).uppercased() ?? "AB"
+        companyManager.activeCompany?.name.prefix(2).uppercased() ?? "AB"
     }
     
     // MARK: - Animation Functions
@@ -246,7 +246,7 @@ struct CompanyPickerSheet: View {
             ForEach(Array(companyManager.companies.enumerated()), id: \.element.id) { index, company in
                 LiquidCompanyCard(
                     company: company,
-                    isSelected: company.id == companyManager.selectedCompany?.id,
+                    isSelected: company.id == companyManager.activeCompany?.id,
                     animationDelay: Double(index) * 0.1
                 ) {
                     selectCompany(company)
@@ -717,3 +717,4 @@ struct LiquidToggleStyle: ToggleStyle {
         .environmentObject(CompanyManager())
         .padding()
 }
+

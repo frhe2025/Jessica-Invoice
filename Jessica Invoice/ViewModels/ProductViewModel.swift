@@ -65,7 +65,13 @@ class ProductViewModel: ObservableObject {
     
     // MARK: - Product Operations
     func createNewProduct() {
-        currentProduct = Product()
+        let activeCompanyId: UUID? = {
+            if let idString = UserDefaults.standard.string(forKey: "activeCompanyId") {
+                return UUID(uuidString: idString)
+            }
+            return nil
+        }()
+        currentProduct = Product(companyId: activeCompanyId)
         isEditingProduct = true
     }
     
@@ -319,3 +325,4 @@ enum ProductError: LocalizedError {
         }
     }
 }
+

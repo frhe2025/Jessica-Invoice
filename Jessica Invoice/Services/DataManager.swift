@@ -289,7 +289,7 @@ class DataManager: ObservableObject {
         print("📦 Performing migrations from \(oldVersion) to \(newVersion)")
     }
     
-    private func cleanupUnusedData() async throws {
+    func cleanupUnusedData() async throws {
         print("🧹 Cleaning up unused data")
     }
 }
@@ -340,3 +340,4 @@ extension DateFormatter {
         return formatter
     }()
 }
+
