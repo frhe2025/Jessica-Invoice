@@ -34,92 +34,90 @@ struct NewInvoiceView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { geometry in
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header with invoice number
-                        InvoiceHeaderSection(invoice: $invoice, isEditMode: isEditMode)
-                        
-                        // Client selection
-                        ClientSelectionSection(
-                            client: $invoice.client,
-                            showingClientForm: $showingClientForm
-                        )
-                        
-                        // Invoice details
-                        InvoiceDetailsSection(invoice: $invoice)
-                        
-                        // Items section
-                        InvoiceItemsSection(
-                            items: $invoice.items,
-                            showingProductPicker: $showingProductPicker,
-                            onDeleteItem: { item in
-                                itemToDelete = item
-                                showingDeleteAlert = true
-                            }
-                        )
-                        
-                        // Add items button
-                        AddItemsButton(showingProductPicker: $showingProductPicker)
-                        
-                        // Totals section
-                        InvoiceTotalsSection(invoice: invoice)
-                        
-                        // Notes section
-                        InvoiceNotesSection(notes: $invoice.notes)
-                        
-                        // Action buttons
-                        InvoiceActionButtons(
-                            invoice: invoice,
-                            isLoading: isLoading,
-                            onSave: saveInvoice,
-                            onCancel: { dismiss() }
-                        )
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 100)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header with invoice number
+                    InvoiceHeaderSection(invoice: $invoice, isEditMode: isEditMode)
+                    
+                    // Client selection
+                    ClientSelectionSection(
+                        client: $invoice.client,
+                        showingClientForm: $showingClientForm
+                    )
+                    
+                    // Invoice details
+                    InvoiceDetailsSection(invoice: $invoice)
+                    
+                    // Items section
+                    InvoiceItemsSection(
+                        items: $invoice.items,
+                        showingProductPicker: $showingProductPicker,
+                        onDeleteItem: { item in
+                            itemToDelete = item
+                            showingDeleteAlert = true
+                        }
+                    )
+                    
+                    // Add items button
+                    AddItemsButton(showingProductPicker: $showingProductPicker)
+                    
+                    // Totals section
+                    InvoiceTotalsSection(invoice: invoice)
+                    
+                    // Notes section
+                    InvoiceNotesSection(notes: $invoice.notes)
+                    
+                    // Action buttons
+                    InvoiceActionButtons(
+                        invoice: invoice,
+                        isLoading: isLoading,
+                        onSave: saveInvoice,
+                        onCancel: { dismiss() }
+                    )
                 }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 100)
             }
-            .background(GradientBackground.invoice)
-            .navigationTitle(isEditMode ? "Redigera Faktura" : "Ny Faktura")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Avbryt") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(isEditMode ? "Uppdatera" : "Spara") {
-                        saveInvoice()
-                    }
-                    .fontWeight(.semibold)
-                    .disabled(isLoading || !canSave)
-                    .loadingButton(isLoading: isLoading)
-                }
-            }
-            .sheet(isPresented: $showingClientForm) {
-                ClientFormView(client: $invoice.client)
-            }
-            .sheet(isPresented: $showingProductPicker) {
-                ProductPickerView(selectedItems: $invoice.items)
-            }
-            .alert("Ta bort artikel", isPresented: $showingDeleteAlert) {
-                Button("Ta bort", role: .destructive) {
-                    if let item = itemToDelete {
-                        invoice.items.removeAll { $0.id == item.id }
-                    }
-                }
-                Button("Avbryt", role: .cancel) {
-                    itemToDelete = nil
-                }
-            } message: {
-                Text("Är du säker på att du vill ta bort denna artikel?")
-            }
-            .errorAlert(isPresented: $showingError, error: InvoiceFormError(message: errorMessage ?? ""))
         }
+        .background(GradientBackground.invoice)
+        .navigationTitle(isEditMode ? "Redigera Faktura" : "Ny Faktura")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Avbryt") {
+                    dismiss()
+                }
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(isEditMode ? "Uppdatera" : "Spara") {
+                    saveInvoice()
+                }
+                .fontWeight(.semibold)
+                .disabled(isLoading || !canSave)
+                .loadingButton(isLoading: isLoading)
+            }
+        }
+        .sheet(isPresented: $showingClientForm) {
+            ClientFormView(client: $invoice.client)
+        }
+        .sheet(isPresented: $showingProductPicker) {
+            ProductPickerView(selectedItems: $invoice.items)
+        }
+        .alert("Ta bort artikel", isPresented: $showingDeleteAlert) {
+            Button("Ta bort", role: .destructive) {
+                if let item = itemToDelete {
+                    invoice.items.removeAll { $0.id == item.id }
+                }
+            }
+            Button("Avbryt", role: .cancel) {
+                itemToDelete = nil
+            }
+        } message: {
+            Text("Är du säker på att du vill ta bort denna artikel?")
+        }
+        .errorAlert(isPresented: $showingError, error: InvoiceFormError(message: errorMessage ?? ""))
     }
     
     private var canSave: Bool {
@@ -714,3 +712,4 @@ struct InvoiceFormError: LocalizedError {
         .environmentObject(InvoiceViewModel())
         .environmentObject(ProductViewModel())
 }
+

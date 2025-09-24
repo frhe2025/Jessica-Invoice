@@ -104,8 +104,8 @@ struct Jessica_InvoiceApp: App {
         
         // Refresh data if needed
         if companyManager.activeCompany != nil {
-            await invoiceViewModel.loadInvoices()
-            await productViewModel.loadProducts()
+            invoiceViewModel.loadInvoices()
+            productViewModel.loadProducts()
         }
     }
     

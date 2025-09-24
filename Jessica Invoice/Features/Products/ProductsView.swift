@@ -20,180 +20,178 @@ struct ProductsView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { geometry in
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header
-                        VStack(spacing: 16) {
-                            Image(systemName: "cart.fill")
-                                .font(.system(size: 48, weight: .light))
-                                .foregroundStyle(.green.gradient)
-                            
-                            Text("Produkter & Tjänster")
-                                .font(.largeTitle)
-                                .fontWeight(.semibold)
-                            
-                            Text("Hantera dina produkter och priser")
-                                .font(.body)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(.vertical, 32)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header
+                    VStack(spacing: 16) {
+                        Image(systemName: "cart.fill")
+                            .font(.system(size: 48, weight: .light))
+                            .foregroundStyle(.green.gradient)
                         
-                        // Statistics Cards
-                        if !productViewModel.products.isEmpty {
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: geometry.size.width > 700 ? 4 : 2), spacing: 16) {
-                                ProductStatCard(
-                                    title: "Totala produkter",
-                                    value: "\(productViewModel.totalProducts)",
-                                    icon: "cart.fill",
-                                    color: .blue
-                                )
-                                
-                                ProductStatCard(
-                                    title: "Genomsnittspris",
-                                    value: String(format: "%.0f kr", productViewModel.averagePrice),
-                                    icon: "chart.line.uptrend.xyaxis",
-                                    color: .green
-                                )
-                                
-                                ProductStatCard(
-                                    title: "Kategorier",
-                                    value: "\(ProductCategory.allCases.count)",
-                                    icon: "folder.fill",
-                                    color: .purple
-                                )
-                                
-                                ProductStatCard(
-                                    title: "Senast använda",
-                                    value: "\(productViewModel.mostUsedProducts.count)",
-                                    icon: "clock.arrow.circlepath",
-                                    color: .orange
-                                )
-                            }
-                        }
+                        Text("Produkter & Tjänster")
+                            .font(.largeTitle)
+                            .fontWeight(.semibold)
                         
-                        // Search and Filter
-                        GlassCard {
-                            VStack(spacing: 16) {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "magnifyingglass")
-                                        .foregroundStyle(.secondary)
-                                    
-                                    TextField("Sök produkter...", text: $productViewModel.searchText)
-                                        .textFieldStyle(.plain)
-                                    
-                                    if !productViewModel.searchText.isEmpty {
-                                        Button {
-                                            productViewModel.searchText = ""
-                                        } label: {
-                                            Image(systemName: "xmark.circle.fill")
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                    
-                                    Button {
-                                        showingFilterOptions.toggle()
-                                    } label: {
-                                        Image(systemName: "slider.horizontal.3")
-                                            .foregroundStyle(.blue)
-                                    }
-                                }
-                                .padding(12)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(.ultraThinMaterial)
-                                )
-                                
-                                if showingFilterOptions {
-                                    ScrollView(.horizontal, showsIndicators: false) {
-                                        HStack(spacing: 8) {
-                                            CategoryPill(
-                                                title: "Alla",
-                                                isSelected: selectedCategory == nil
-                                            ) {
-                                                selectedCategory = nil
-                                                productViewModel.selectedCategory = nil
-                                            }
-                                            
-                                            ForEach(ProductCategory.allCases, id: \.self) { category in
-                                                CategoryPill(
-                                                    title: category.displayName,
-                                                    isSelected: selectedCategory == category
-                                                ) {
-                                                    selectedCategory = selectedCategory == category ? nil : category
-                                                    productViewModel.selectedCategory = selectedCategory
-                                                }
-                                            }
-                                        }
-                                        .padding(.horizontal, 4)
-                                    }
-                                }
-                            }
-                            .padding(16)
-                        }
-                        
-                        // Add Product Button
-                        Button {
-                            productViewModel.createNewProduct()
-                        } label: {
-                            GlassCard {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundStyle(.green)
-                                    
-                                    Text("Lägg till ny produkt")
-                                        .font(.headline)
-                                        .foregroundStyle(.primary)
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                }
-                                .padding(20)
-                            }
-                        }
-                        .buttonStyle(ScaleButtonStyle())
-                        
-                        // Products Grid or Empty State
-                        if filteredProducts.isEmpty {
-                            ProductsEmptyState(
-                                hasProducts: !productViewModel.products.isEmpty,
-                                searchText: productViewModel.searchText,
-                                onAddProduct: {
-                                    productViewModel.createNewProduct()
-                                },
-                                onClearSearch: {
-                                    productViewModel.clearFilters()
-                                }
+                        Text("Hantera dina produkter och priser")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.vertical, 32)
+                    
+                    // Statistics Cards
+                    if !productViewModel.products.isEmpty {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: geometry.size.width > 700 ? 4 : 2), spacing: 16) {
+                            ProductStatCard(
+                                title: "Totala produkter",
+                                value: "\(productViewModel.totalProducts)",
+                                icon: "cart.fill",
+                                color: .blue
                             )
-                        } else {
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: geometry.size.width > 700 ? 2 : 1), spacing: 16) {
-                                ForEach(filteredProducts) { product in
-                                    ProductCard(product: product) {
-                                        productViewModel.editProduct(product)
-                                    } onDelete: {
-                                        Task {
-                                            try? await productViewModel.deleteProduct(product)
+                            
+                            ProductStatCard(
+                                title: "Genomsnittspris",
+                                value: String(format: "%.0f kr", productViewModel.averagePrice),
+                                icon: "chart.line.uptrend.xyaxis",
+                                color: .green
+                            )
+                            
+                            ProductStatCard(
+                                title: "Kategorier",
+                                value: "\(ProductCategory.allCases.count)",
+                                icon: "folder.fill",
+                                color: .purple
+                            )
+                            
+                            ProductStatCard(
+                                title: "Senast använda",
+                                value: "\(productViewModel.mostUsedProducts.count)",
+                                icon: "clock.arrow.circlepath",
+                                color: .orange
+                            )
+                        }
+                    }
+                    
+                    // Search and Filter
+                    GlassCard {
+                        VStack(spacing: 16) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundStyle(.secondary)
+                                
+                                TextField("Sök produkter...", text: $productViewModel.searchText)
+                                    .textFieldStyle(.plain)
+                                
+                                if !productViewModel.searchText.isEmpty {
+                                    Button {
+                                        productViewModel.searchText = ""
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                
+                                Button {
+                                    showingFilterOptions.toggle()
+                                } label: {
+                                    Image(systemName: "slider.horizontal.3")
+                                        .foregroundStyle(.blue)
+                                }
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(.ultraThinMaterial)
+                            )
+                            
+                            if showingFilterOptions {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        CategoryPill(
+                                            title: "Alla",
+                                            isSelected: selectedCategory == nil
+                                        ) {
+                                            selectedCategory = nil
+                                            productViewModel.selectedCategory = nil
                                         }
+                                        
+                                        ForEach(ProductCategory.allCases, id: \.self) { category in
+                                            CategoryPill(
+                                                title: category.displayName,
+                                                isSelected: selectedCategory == category
+                                            ) {
+                                                selectedCategory = selectedCategory == category ? nil : category
+                                                productViewModel.selectedCategory = selectedCategory
+                                            }
+                                        }
+                                    }
+                                    .padding(.horizontal, 4)
+                                }
+                            }
+                        }
+                        .padding(16)
+                    }
+                    
+                    // Add Product Button
+                    Button {
+                        productViewModel.createNewProduct()
+                    } label: {
+                        GlassCard {
+                            HStack(spacing: 12) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.green)
+                                
+                                Text("Lägg till ny produkt")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(20)
+                        }
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                    
+                    // Products Grid or Empty State
+                    if filteredProducts.isEmpty {
+                        ProductsEmptyState(
+                            hasProducts: !productViewModel.products.isEmpty,
+                            searchText: productViewModel.searchText,
+                            onAddProduct: {
+                                productViewModel.createNewProduct()
+                            },
+                            onClearSearch: {
+                                productViewModel.clearFilters()
+                            }
+                        )
+                    } else {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: geometry.size.width > 700 ? 2 : 1), spacing: 16) {
+                            ForEach(filteredProducts) { product in
+                                ProductCard(product: product) {
+                                    productViewModel.editProduct(product)
+                                } onDelete: {
+                                    Task {
+                                        try? await productViewModel.deleteProduct(product)
                                     }
                                 }
                             }
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 100)
                 }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 100)
             }
-            .background(GradientBackground.products)
-            .navigationBarHidden(true)
-            .refreshable {
-                productViewModel.loadProducts()
-            }
+        }
+        .background(GradientBackground.products)
+        .navigationBarHidden(true)
+        .refreshable {
+            productViewModel.loadProducts()
         }
         .searchable(text: $productViewModel.searchText, prompt: "Sök produkter...")
         .sheet(isPresented: $productViewModel.isEditingProduct) {

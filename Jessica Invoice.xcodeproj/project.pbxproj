@@ -32,6 +32,7 @@
 		187C2A922E75CB460021A48F /* Jessica Invoice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Jessica Invoice.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		187C2A9F2E75CB4A0021A48F /* Jessica InvoiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Jessica InvoiceTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		187C2AA92E75CB4A0021A48F /* Jessica InvoiceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Jessica InvoiceUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		18FBA0862E841DEE00C3C66D /* Jessica Invoice.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Jessica Invoice.xctestplan"; sourceTree = "<group>"; };
 		18FF0F322E7BD52300895205 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		18FF0F3B2E7C610C00895205 /* CompanyDataSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyDataSummary.swift; sourceTree = "<group>"; };
 		18FF0F3D2E7C63BA00895205 /* UIStubs+Liquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIStubs+Liquid.swift"; sourceTree = "<group>"; };
@@ -97,6 +98,7 @@
 		187C2A892E75CB460021A48F = {
 			isa = PBXGroup;
 			children = (
+				18FBA0862E841DEE00C3C66D /* Jessica Invoice.xctestplan */,
 				187C2A942E75CB460021A48F /* Jessica Invoice */,
 				187C2AA22E75CB4A0021A48F /* Jessica InvoiceTests */,
 				187C2AAC2E75CB4A0021A48F /* Jessica InvoiceUITests */,
@@ -445,6 +447,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "JWB.Jessica-Invoice";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 2;
@@ -478,6 +483,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "JWB.Jessica-Invoice";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 2;
@@ -491,10 +499,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "JWB.Jessica-InvoiceTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -509,10 +520,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "JWB.Jessica-InvoiceTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

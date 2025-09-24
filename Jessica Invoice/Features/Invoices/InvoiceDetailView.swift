@@ -27,124 +27,122 @@ struct InvoiceDetailView: View {
     @State private var showingError = false
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Status Header
-                    InvoiceStatusHeader(invoice: invoice, showingStatusPicker: $showingStatusPicker)
-                    
-                    // Client Information
-                    ClientInformationCard(client: invoice.client)
-                    
-                    // Invoice Details
-                    InvoiceDetailsCard(invoice: invoice)
-                    
-                    // Invoice Items
-                    InvoiceItemsCard(items: invoice.items)
-                    
-                    // Totals
-                    InvoiceTotalsCard(invoice: invoice)
-                    
-                    // Payment Information
-                    if invoice.status == .sent || invoice.status == .overdue {
-                        PaymentInformationCard(invoice: invoice)
-                    }
-                    
-                    // Actions
-                    InvoiceActionsCard(
-                        invoice: invoice,
-                        showingEditSheet: $showingEditSheet,
-                        showingShareSheet: $showingShareSheet,
-                        showingPDFPreview: $showingPDFPreview,
-                        showingDeleteAlert: $showingDeleteAlert
-                    )
-                    
-                    // Notes
-                    if !invoice.notes.isEmpty {
-                        InvoiceNotesCard(notes: invoice.notes)
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 100)
-            }
-            .background(GradientBackground.invoice)
-            .navigationTitle(invoice.formattedNumber)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Tillbaka") {
-                        dismiss()
-                    }
+        ScrollView {
+            VStack(spacing: 24) {
+                // Status Header
+                InvoiceStatusHeader(invoice: invoice, showingStatusPicker: $showingStatusPicker)
+                
+                // Client Information
+                ClientInformationCard(client: invoice.client)
+                
+                // Invoice Details
+                InvoiceDetailsCard(invoice: invoice)
+                
+                // Invoice Items
+                InvoiceItemsCard(items: invoice.items)
+                
+                // Totals
+                InvoiceTotalsCard(invoice: invoice)
+                
+                // Payment Information
+                if invoice.status == .sent || invoice.status == .overdue {
+                    PaymentInformationCard(invoice: invoice)
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Button("Redigera") {
-                            showingEditSheet = true
-                        }
-                        
-                        Button("Dela") {
-                            shareInvoice()
-                        }
-                        
-                        Button("Visa PDF") {
-                            generatePDF()
-                        }
-                        
-                        Divider()
-                        
-                        Button("Duplicera") {
-                            duplicateInvoice()
-                        }
-                        
-                        Button("Ta bort", role: .destructive) {
-                            showingDeleteAlert = true
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                    }
-                }
-            }
-            .sheet(isPresented: $showingEditSheet) {
-                NewInvoiceView(invoice: invoice)
-            }
-            .sheet(isPresented: $showingPDFPreview) {
-                if let pdfData = pdfData {
-                    PDFPreviewView(pdfData: pdfData, fileName: "Faktura_\(invoice.formattedNumber)")
-                }
-            }
-            .shareSheet(
-                isPresented: $showingShareSheet,
-                items: shareURL != nil ? [shareURL!] : [],
-                completion: { _, _, _, _ in
-                    shareURL = nil
-                }
-            )
-            .confirmationDialog(
-                "Ändra status",
-                isPresented: $showingStatusPicker,
-                titleVisibility: .visible
-            ) {
-                ForEach(InvoiceStatus.allCases, id: \.self) { status in
-                    if status != invoice.status {
-                        Button(status.displayName) {
-                            updateStatus(to: status)
-                        }
-                    }
-                }
+                // Actions
+                InvoiceActionsCard(
+                    invoice: invoice,
+                    showingEditSheet: $showingEditSheet,
+                    showingShareSheet: $showingShareSheet,
+                    showingPDFPreview: $showingPDFPreview,
+                    showingDeleteAlert: $showingDeleteAlert
+                )
                 
-                Button("Avbryt", role: .cancel) {}
-            }
-            .alert("Ta bort faktura", isPresented: $showingDeleteAlert) {
-                Button("Ta bort", role: .destructive) {
-                    deleteInvoice()
+                // Notes
+                if !invoice.notes.isEmpty {
+                    InvoiceNotesCard(notes: invoice.notes)
                 }
-                Button("Avbryt", role: .cancel) {}
-            } message: {
-                Text("Är du säker på att du vill ta bort denna faktura? Denna åtgärd kan inte ångras.")
             }
-            .errorAlert(isPresented: $showingError, error: InvoiceDetailError(message: errorMessage ?? ""))
+            .padding(.horizontal, 20)
+            .padding(.bottom, 100)
         }
+        .background(GradientBackground.invoice)
+        .navigationTitle(invoice.formattedNumber)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Tillbaka") {
+                    dismiss()
+                }
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button("Redigera") {
+                        showingEditSheet = true
+                    }
+                    
+                    Button("Dela") {
+                        shareInvoice()
+                    }
+                    
+                    Button("Visa PDF") {
+                        generatePDF()
+                    }
+                    
+                    Divider()
+                    
+                    Button("Duplicera") {
+                        duplicateInvoice()
+                    }
+                    
+                    Button("Ta bort", role: .destructive) {
+                        showingDeleteAlert = true
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            NewInvoiceView(invoice: invoice)
+        }
+        .sheet(isPresented: $showingPDFPreview) {
+            if let pdfData = pdfData {
+                PDFPreviewView(pdfData: pdfData, fileName: "Faktura_\(invoice.formattedNumber)")
+            }
+        }
+        .shareSheet(
+            isPresented: $showingShareSheet,
+            items: shareURL != nil ? [shareURL!] : [],
+            completion: { _, _, _, _ in
+                shareURL = nil
+            }
+        )
+        .confirmationDialog(
+            "Ändra status",
+            isPresented: $showingStatusPicker,
+            titleVisibility: .visible
+        ) {
+            ForEach(InvoiceStatus.allCases, id: \.self) { status in
+                if status != invoice.status {
+                    Button(status.displayName) {
+                        updateStatus(to: status)
+                    }
+                }
+            }
+            
+            Button("Avbryt", role: .cancel) {}
+        }
+        .alert("Ta bort faktura", isPresented: $showingDeleteAlert) {
+            Button("Ta bort", role: .destructive) {
+                deleteInvoice()
+            }
+            Button("Avbryt", role: .cancel) {}
+        } message: {
+            Text("Är du säker på att du vill ta bort denna faktura? Denna åtgärd kan inte ångras.")
+        }
+        .errorAlert(isPresented: $showingError, error: InvoiceDetailError(message: errorMessage ?? ""))
     }
     
     private func updateStatus(to status: InvoiceStatus) {
@@ -270,7 +268,7 @@ struct InvoiceStatusHeader: View {
                     VStack(spacing: 8) {
                         let daysSince = Calendar.current.dateComponents([.day], from: invoice.date, to: Date()).day ?? 0
                         ProgressView(value: Double(daysSince), total: Double(invoice.paymentTerms))
-                            .tint(invoice.dueDate.daysUntil() <= 7 ? .orange : .blue)
+                            .tint(invoice.dueDate.daysUntil <= 7 ? .orange : .blue)
                         
                         HStack {
                             Text("Skickad \(invoice.date.invoiceTimeString)")

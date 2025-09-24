@@ -27,165 +27,163 @@ struct SettingsView: View {
     let templateOptions = ["Standard", "Minimal", "Professional"]
     
     var body: some View {
-        NavigationStack {
-            ScrollView(.vertical, showsIndicators: true) {
-                VStack(spacing: 32) {
-                    // Header
+        ScrollView(.vertical, showsIndicators: true) {
+            VStack(spacing: 32) {
+                // Header
+                VStack(spacing: 16) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 48, weight: .light))
+                        .foregroundStyle(.purple.gradient)
+                    
+                    Text("Inställningar")
+                        .font(.largeTitle)
+                        .fontWeight(.semibold)
+                    
+                    Text("Konfigurera din app och företagsinformation")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(EdgeInsets(top: 32, leading: 0, bottom: 32, trailing: 0))
+                
+                // Company Information
+                SettingsSection(title: "Företagsinformation", icon: "building.2") {
                     VStack(spacing: 16) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 48, weight: .light))
-                            .foregroundStyle(.purple.gradient)
+                        SettingsField(title: "Företagsnamn", text: $companyName, icon: "building")
+                        SettingsField(title: "Organisationsnummer", text: $organizationNumber, icon: "number")
+                        SettingsField(title: "Adress", text: $address, icon: "location")
                         
-                        Text("Inställningar")
-                            .font(.largeTitle)
-                            .fontWeight(.semibold)
+                        HStack(spacing: 12) {
+                            SettingsField(title: "Postnummer", text: $postalCode, icon: "envelope")
+                            SettingsField(title: "Stad", text: $city, icon: "location.circle")
+                        }
                         
-                        Text("Konfigurera din app och företagsinformation")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(EdgeInsets(top: 32, leading: 0, bottom: 32, trailing: 0))
-                    
-                    // Company Information
-                    SettingsSection(title: "Företagsinformation", icon: "building.2") {
-                        VStack(spacing: 16) {
-                            SettingsField(title: "Företagsnamn", text: $companyName, icon: "building")
-                            SettingsField(title: "Organisationsnummer", text: $organizationNumber, icon: "number")
-                            SettingsField(title: "Adress", text: $address, icon: "location")
-                            
-                            HStack(spacing: 12) {
-                                SettingsField(title: "Postnummer", text: $postalCode, icon: "envelope")
-                                SettingsField(title: "Stad", text: $city, icon: "location.circle")
-                            }
-                            
-                            SettingsField(title: "E-post", text: $email, icon: "envelope.fill")
-                            SettingsField(title: "Telefon", text: $phone, icon: "phone.fill")
-                            SettingsField(title: "VAT-nummer", text: $vatNumber, icon: "doc.text")
-                        }
-                    }
-                    
-                    // Invoice Settings
-                    SettingsSection(title: "Fakturainställningar", icon: "doc.text.fill") {
-                        VStack(spacing: 16) {
-                            SettingsPicker(
-                                title: "Betalningsvillkor",
-                                selection: $defaultPaymentTerms,
-                                options: paymentTermsOptions,
-                                displayValue: { "\($0) dagar" },
-                                icon: "calendar"
-                            )
-                            
-                            SettingsPicker(
-                                title: "Valuta",
-                                selection: $currency,
-                                options: currencyOptions,
-                                displayValue: { $0 },
-                                icon: "dollarsign.circle"
-                            )
-                            
-                            SettingsPicker(
-                                title: "Fakturamall",
-                                selection: $invoiceTemplate,
-                                options: templateOptions,
-                                displayValue: { $0 },
-                                icon: "doc.richtext"
-                            )
-                        }
-                    }
-                    
-                    // App Settings
-                    SettingsSection(title: "App-inställningar", icon: "app.badge") {
-                        VStack(spacing: 16) {
-                            SettingsToggle(
-                                title: "Push-notiser",
-                                subtitle: "Få notiser när fakturor betalas",
-                                isOn: $enableNotifications,
-                                icon: "bell.fill"
-                            )
-                            
-                            SettingsButton(
-                                title: "Exportera data",
-                                subtitle: "Exportera all fakturadata",
-                                icon: "square.and.arrow.up",
-                                color: .blue
-                            ) {
-                                // Export data
-                            }
-                            
-                            SettingsButton(
-                                title: "Återställ app",
-                                subtitle: "Återställ all data och inställningar",
-                                icon: "arrow.clockwise",
-                                color: .orange
-                            ) {
-                                // Reset app
-                            }
-                        }
-                    }
-                    
-                    // Support
-                    SettingsSection(title: "Support", icon: "questionmark.circle") {
-                        VStack(spacing: 16) {
-                            SettingsButton(
-                                title: "Hjälp & FAQ",
-                                subtitle: "Vanliga frågor och svar",
-                                icon: "questionmark.circle",
-                                color: .green
-                            ) {
-                                // Show help
-                            }
-                            
-                            SettingsButton(
-                                title: "Kontakta support",
-                                subtitle: "Få hjälp med din app",
-                                icon: "envelope",
-                                color: .blue
-                            ) {
-                                // Contact support
-                            }
-                            
-                            SettingsButton(
-                                title: "Betygsätt appen",
-                                subtitle: "Betygsätt oss i App Store",
-                                icon: "star.fill",
-                                color: .yellow
-                            ) {
-                                // Rate app
-                            }
-                        }
-                    }
-                    
-                    // Version Info
-                    GlassCard(style: .compact) {
-                        VStack(spacing: 8) {
-                            Text("Jessica Invoice")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                            
-                            Text("Version 1.0.0")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            
-                            Text("© 2025 Jessica AB")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                        }
-                        .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
+                        SettingsField(title: "E-post", text: $email, icon: "envelope.fill")
+                        SettingsField(title: "Telefon", text: $phone, icon: "phone.fill")
+                        SettingsField(title: "VAT-nummer", text: $vatNumber, icon: "doc.text")
                     }
                 }
-                .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
-                .padding(EdgeInsets(top: 0, leading: 0, bottom: 100, trailing: 0))
+                
+                // Invoice Settings
+                SettingsSection(title: "Fakturainställningar", icon: "doc.text.fill") {
+                    VStack(spacing: 16) {
+                        SettingsPicker(
+                            title: "Betalningsvillkor",
+                            selection: $defaultPaymentTerms,
+                            options: paymentTermsOptions,
+                            displayValue: { "\($0) dagar" },
+                            icon: "calendar"
+                        )
+                        
+                        SettingsPicker(
+                            title: "Valuta",
+                            selection: $currency,
+                            options: currencyOptions,
+                            displayValue: { $0 },
+                            icon: "dollarsign.circle"
+                        )
+                        
+                        SettingsPicker(
+                            title: "Fakturamall",
+                            selection: $invoiceTemplate,
+                            options: templateOptions,
+                            displayValue: { $0 },
+                            icon: "doc.richtext"
+                        )
+                    }
+                }
+                
+                // App Settings
+                SettingsSection(title: "App-inställningar", icon: "app.badge") {
+                    VStack(spacing: 16) {
+                        SettingsToggle(
+                            title: "Push-notiser",
+                            subtitle: "Få notiser när fakturor betalas",
+                            isOn: $enableNotifications,
+                            icon: "bell.fill"
+                        )
+                        
+                        SettingsButton(
+                            title: "Exportera data",
+                            subtitle: "Exportera all fakturadata",
+                            icon: "square.and.arrow.up",
+                            color: .blue
+                        ) {
+                            // Export data
+                        }
+                        
+                        SettingsButton(
+                            title: "Återställ app",
+                            subtitle: "Återställ all data och inställningar",
+                            icon: "arrow.clockwise",
+                            color: .orange
+                        ) {
+                            // Reset app
+                        }
+                    }
+                }
+                
+                // Support
+                SettingsSection(title: "Support", icon: "questionmark.circle") {
+                    VStack(spacing: 16) {
+                        SettingsButton(
+                            title: "Hjälp & FAQ",
+                            subtitle: "Vanliga frågor och svar",
+                            icon: "questionmark.circle",
+                            color: .green
+                        ) {
+                            // Show help
+                        }
+                        
+                        SettingsButton(
+                            title: "Kontakta support",
+                            subtitle: "Få hjälp med din app",
+                            icon: "envelope",
+                            color: .blue
+                        ) {
+                            // Contact support
+                        }
+                        
+                        SettingsButton(
+                            title: "Betygsätt appen",
+                            subtitle: "Betygsätt oss i App Store",
+                            icon: "star.fill",
+                            color: .yellow
+                        ) {
+                            // Rate app
+                        }
+                    }
+                }
+                
+                // Version Info
+                GlassCard(style: .compact) {
+                    VStack(spacing: 8) {
+                        Text("Jessica Invoice")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                        
+                        Text("Version 1.0.0")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        
+                        Text("© 2025 Jessica AB")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
+                }
             }
-            .background(
-                LinearGradient(
-                    colors: [.purple.opacity(0.03), .clear],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
-            .navigationBarHidden(true)
+            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 100, trailing: 0))
         }
+        .background(
+            LinearGradient(
+                colors: [.purple.opacity(0.03), .clear],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+        .navigationBarHidden(true)
     }
 }
 
@@ -405,4 +403,3 @@ struct SettingsButton: View {
 #Preview {
     SettingsView()
 }
-

@@ -18,51 +18,49 @@ struct InvoiceView: View {
     @State private var statisticsAnimationDelay: Double = 0
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { geometry in
-                ScrollView {
-                    LazyVStack(spacing: 28) {
-                        // Hero Section with Liquid Glass
-                        heroSection
-                        
-                        // Company Context Indicator
-                        if let company = companyManager.activeCompany {
-                            companyContextSection(company: company)
-                        }
-                        
-                        // Quick Statistics Dashboard
-                        statisticsSection(geometry: geometry)
-                        
-                        // Primary Actions
-                        primaryActionsSection(geometry: geometry)
-                        
-                        // Recent Activity
-                        if !dashboardViewModel.recentInvoices.isEmpty {
-                            recentActivitySection
-                        }
-                        
-                        // Smart Suggestions & Alerts
-                        smartSuggestionsSection
+        GeometryReader { geometry in
+            ScrollView {
+                LazyVStack(spacing: 28) {
+                    // Hero Section with Liquid Glass
+                    heroSection
+                    
+                    // Company Context Indicator
+                    if let company = companyManager.activeCompany {
+                        companyContextSection(company: company)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 120)
+                    
+                    // Quick Statistics Dashboard
+                    statisticsSection(geometry: geometry)
+                    
+                    // Primary Actions
+                    primaryActionsSection(geometry: geometry)
+                    
+                    // Recent Activity
+                    if !dashboardViewModel.recentInvoices.isEmpty {
+                        recentActivitySection
+                    }
+                    
+                    // Smart Suggestions & Alerts
+                    smartSuggestionsSection
                 }
-                .scrollIndicators(.hidden)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 120)
             }
-            .liquidGlassBackground(.invoice)
-            .navigationBarHidden(true)
-            .refreshable {
-                await refreshDashboardData()
-            }
-            .onAppear {
-                setupInitialData()
-                startHeroAnimation()
-            }
-            .onChange(of: companyManager.activeCompany?.id) { _ in
-                if let company = companyManager.activeCompany {
-                    Task {
-                        await loadCompanyData(company)
-                    }
+            .scrollIndicators(.hidden)
+        }
+        .liquidGlassBackground(.invoice)
+        .navigationBarHidden(true)
+        .refreshable {
+            await refreshDashboardData()
+        }
+        .onAppear {
+            setupInitialData()
+            startHeroAnimation()
+        }
+        .onChange(of: companyManager.activeCompany?.id) { _, _ in
+            if let company = companyManager.activeCompany {
+                Task {
+                    await loadCompanyData(company)
                 }
             }
         }
@@ -810,4 +808,3 @@ struct InvoiceStatistics {
         .environmentObject(CompanyManager())
         .environmentObject(InvoiceViewModel())
 }
-

@@ -22,54 +22,52 @@ struct CompanyManagementView: View {
     @State private var companySummaries: [UUID: CompanyDataSummary] = [:]
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header Section
-                    headerSection
-                    
-                    // Companies Overview
-                    companiesOverviewSection
-                    
-                    // Companies List
-                    companiesListSection
-                    
-                    // Management Actions
-                    managementActionsSection
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header Section
+                headerSection
+                
+                // Companies Overview
+                companiesOverviewSection
+                
+                // Companies List
+                companiesListSection
+                
+                // Management Actions
+                managementActionsSection
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 40)
+        }
+        .settingsLiquidBackground()
+        .navigationTitle("Företag")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingAddCompany = true
+                } label: {
+                    Image(systemName: "plus")
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 40)
+                .liquidButtonStyle(variant: .primary, size: .small)
             }
-            .settingsLiquidBackground()
-            .navigationTitle("Företag")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingAddCompany = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .liquidButtonStyle(variant: .primary, size: .small)
-                }
+        }
+        .sheet(isPresented: $showingAddCompany) {
+            AddCompanyView()
+        }
+        .sheet(isPresented: $showingDataSummary) {
+            DataSummaryView(summaries: companySummaries)
+        }
+        .alert("Ta bort företag", isPresented: $showingDeleteConfirmation, presenting: companyToDelete) { company in
+            Button("Ta bort", role: .destructive) {
+                deleteCompany(company)
             }
-            .sheet(isPresented: $showingAddCompany) {
-                AddCompanyView()
-            }
-            .sheet(isPresented: $showingDataSummary) {
-                DataSummaryView(summaries: companySummaries)
-            }
-            .alert("Ta bort företag", isPresented: $showingDeleteConfirmation, presenting: companyToDelete) { company in
-                Button("Ta bort", role: .destructive) {
-                    deleteCompany(company)
-                }
-                Button("Avbryt", role: .cancel) {}
-            } message: { company in
-                Text("Är du säker på att du vill ta bort \(company.name)? All data för detta företag kommer att raderas permanent.")
-            }
-            .onAppear {
-                loadCompanySummaries()
-            }
+            Button("Avbryt", role: .cancel) {}
+        } message: { company in
+            Text("Är du säker på att du vill ta bort \(company.name)? All data för detta företag kommer att raderas permanent.")
+        }
+        .onAppear {
+            loadCompanySummaries()
         }
     }
     

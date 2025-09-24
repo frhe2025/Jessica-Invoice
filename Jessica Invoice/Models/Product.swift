@@ -8,7 +8,7 @@
 import Foundation
 
 struct Product: Identifiable, Codable, Hashable, Equatable {
-    let id = UUID()
+    var id: UUID = UUID()
     var companyId: UUID?
     var name: String
     var description: String

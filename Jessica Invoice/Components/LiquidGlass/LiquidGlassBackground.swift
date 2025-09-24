@@ -159,31 +159,12 @@ struct LiquidGlassBackground: View {
 
 // MARK: - Predefined Liquid Backgrounds
 extension LiquidGlassBackground {
-    static let invoice = LiquidGlassBackground(
-        colors: [.blue, .indigo, .cyan],
-        intensity: 0.06
-    )
-    static let products = LiquidGlassBackground(
-        colors: [.green, .mint, .teal],
-        intensity: 0.05
-    )
-    static let history = LiquidGlassBackground(
-        colors: [.orange, .yellow, .red],
-        intensity: 0.07
-    )
-    static let settings = LiquidGlassBackground(
-        colors: [.purple, .pink, .indigo],
-        intensity: 0.06
-    )
-    static let dashboard = LiquidGlassBackground(
-        colors: [.blue, .purple, .indigo, .cyan],
-        intensity: 0.08
-    )
-    static let neutral = LiquidGlassBackground(
-        colors: [.gray, .secondary],
-        intensity: 0.03,
-        isAnimated: false
-    )
+    @MainActor static var invoice: LiquidGlassBackground { LiquidGlassBackground(colors: [.blue, .indigo, .cyan], intensity: 0.06) }
+    @MainActor static var products: LiquidGlassBackground { LiquidGlassBackground(colors: [.green, .mint, .teal], intensity: 0.05) }
+    @MainActor static var history: LiquidGlassBackground { LiquidGlassBackground(colors: [.orange, .yellow, .red], intensity: 0.07) }
+    @MainActor static var settings: LiquidGlassBackground { LiquidGlassBackground(colors: [.purple, .pink, .indigo], intensity: 0.06) }
+    @MainActor static var dashboard: LiquidGlassBackground { LiquidGlassBackground(colors: [.blue, .purple, .indigo, .cyan], intensity: 0.08) }
+    @MainActor static var neutral: LiquidGlassBackground { LiquidGlassBackground(colors: [.gray, .secondary], intensity: 0.03, isAnimated: false) }
 }
 
 // MARK: - Contextual Liquid Background
@@ -200,7 +181,7 @@ struct ContextualLiquidBackground: View {
         case neutral
         case custom([Color])
         
-        var liquidBackground: LiquidGlassBackground {
+        @MainActor var liquidBackground: LiquidGlassBackground {
             switch self {
             case .invoice: return .invoice
             case .products: return .products
@@ -316,3 +297,4 @@ extension Notification.Name {
     }
     .padding()
 }
+

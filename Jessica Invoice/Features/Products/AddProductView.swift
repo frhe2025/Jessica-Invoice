@@ -31,56 +31,54 @@ struct AddProductView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Product Templates (only for new products)
-                    if !isEditMode {
-                        ProductTemplateSection(
-                            selectedProduct: $product,
-                            showingTemplates: $showingTemplates
-                        )
-                    }
-                    
-                    // Basic Information
-                    ProductBasicInfoSection(product: $product)
-                    
-                    // Pricing Information
-                    ProductPricingSection(product: $product)
-                    
-                    // Category and Settings
-                    ProductCategorySection(product: $product)
-                    
-                    // Advanced Settings
-                    ProductAdvancedSection(product: $product)
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 100)
-            }
-            .background(GradientBackground.products)
-            .navigationTitle(isEditMode ? "Redigera Produkt" : "Ny Produkt")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Avbryt") {
-                        dismiss()
-                    }
+        ScrollView {
+            VStack(spacing: 24) {
+                // Product Templates (only for new products)
+                if !isEditMode {
+                    ProductTemplateSection(
+                        selectedProduct: $product,
+                        showingTemplates: $showingTemplates
+                    )
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(isEditMode ? "Uppdatera" : "Spara") {
-                        saveProduct()
-                    }
-                    .fontWeight(.semibold)
-                    .disabled(product.name.isEmpty || product.price <= 0)
-                    .loadingButton(isLoading: isLoading)
+                // Basic Information
+                ProductBasicInfoSection(product: $product)
+                
+                // Pricing Information
+                ProductPricingSection(product: $product)
+                
+                // Category and Settings
+                ProductCategorySection(product: $product)
+                
+                // Advanced Settings
+                ProductAdvancedSection(product: $product)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 100)
+        }
+        .background(GradientBackground.products)
+        .navigationTitle(isEditMode ? "Redigera Produkt" : "Ny Produkt")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Avbryt") {
+                    dismiss()
                 }
             }
-            .sheet(isPresented: $showingTemplates) {
-                ProductTemplatesView(selectedProduct: $product)
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(isEditMode ? "Uppdatera" : "Spara") {
+                    saveProduct()
+                }
+                .fontWeight(.semibold)
+                .disabled(product.name.isEmpty || product.price <= 0)
+                .loadingButton(isLoading: isLoading)
             }
-            .errorAlert(isPresented: $showingError, error: ProductFormError(message: errorMessage ?? ""))
         }
+        .sheet(isPresented: $showingTemplates) {
+            ProductTemplatesView(selectedProduct: $product)
+        }
+        .errorAlert(isPresented: $showingError, error: ProductFormError(message: errorMessage ?? ""))
     }
     
     private func saveProduct() {

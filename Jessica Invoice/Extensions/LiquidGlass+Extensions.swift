@@ -607,7 +607,7 @@ struct PerformanceOptimizedLiquidModifier: ViewModifier {
             .liquidGlassCard(adaptiveColor: isVisible)
             .onAppear { isVisible = true }
             .onDisappear { isVisible = false }
-            .onChange(of: scenePhase) { newPhase in
+            .onChange(of: scenePhase) { oldPhase, newPhase in
                 // Reduce effects when app is in background
                 isVisible = newPhase == .active
             }

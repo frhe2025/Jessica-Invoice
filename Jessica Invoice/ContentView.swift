@@ -148,6 +148,7 @@ struct ContentView: View {
                 TabItem(
                     title: "Dashboard",
                     icon: "chart.bar.xaxis",
+                    selectedIcon: "chart.bar.xaxis",
                     badge: showingNotificationBadge ? "!" : nil
                 ),
                 TabItem(
@@ -162,7 +163,8 @@ struct ContentView: View {
                 ),
                 TabItem(
                     title: "Historik",
-                    icon: "clock.arrow.circlepath"
+                    icon: "clock.arrow.circlepath",
+                    selectedIcon: "clock.arrow.circlepath"
                 ),
                 TabItem(
                     title: "Inställningar",
@@ -270,7 +272,7 @@ struct ContentView: View {
             object: nil,
             queue: .main
         ) { _ in
-            updateNotificationBadge()
+            Task { @MainActor in updateNotificationBadge() }
         }
     }
     
@@ -293,31 +295,29 @@ struct CompanySettingsView: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Company selector
-                    if companyManager.companies.count > 1 {
-                        CompanySelectorCard()
-                    }
-                    
-                    // Quick stats
-                    CompanyStatsGrid()
-                    
-                    // Company management
-                    CompanyManagementSection()
+        ScrollView {
+            VStack(spacing: 24) {
+                // Company selector
+                if companyManager.companies.count > 1 {
+                    CompanySelectorCard()
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 100)
+                
+                // Quick stats
+                CompanyStatsGrid()
+                
+                // Company management
+                CompanyManagementSection()
             }
-            .background(AnimatedGradientBackground.settings)
-            .navigationTitle("Företagsinställningar")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    AdaptiveButton.ghost("Stäng") {
-                        dismiss()
-                    }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 100)
+        }
+        .background(AnimatedGradientBackground.settings)
+        .navigationTitle("Företagsinställningar")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                AdaptiveButton.ghost("Stäng") {
+                    dismiss()
                 }
             }
         }

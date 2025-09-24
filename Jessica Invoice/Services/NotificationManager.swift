@@ -31,7 +31,7 @@ class NotificationManager: NSObject, ObservableObject {
             await MainActor.run {
                 isEnabled = granted
             }
-            await checkAuthorizationStatus()
+            checkAuthorizationStatus()
         } catch {
             print("❌ Notification permission error: \(error)")
         }
@@ -54,13 +54,11 @@ class NotificationManager: NSObject, ObservableObject {
         let pendingRequests = await center.pendingNotificationRequests()
         let badgeCount = pendingRequests.count
         
-        await MainActor.run {
-            UIApplication.shared.applicationIconBadgeNumber = badgeCount
-        }
+        center.setBadgeCount(badgeCount) { _ in }
     }
     
     func clearBadge() {
-        UIApplication.shared.applicationIconBadgeNumber = 0
+        center.setBadgeCount(0) { _ in }
     }
     
     // MARK: - Invoice Notifications
@@ -75,7 +73,7 @@ class NotificationManager: NSObject, ObservableObject {
         content.body = "Faktura \(invoice.number) till \(invoice.client.name) förfaller om \(daysBefore) dagar"
         content.categoryIdentifier = "INVOICE_REMINDER"
         content.sound = .default
-        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
+        content.badge = 1
         
         // Calculate notification date
         let notificationDate = Calendar.current.date(
@@ -114,7 +112,7 @@ class NotificationManager: NSObject, ObservableObject {
         content.body = "Faktura \(invoice.number) till \(invoice.client.name) är nu försenad"
         content.categoryIdentifier = "OVERDUE_INVOICE"
         content.sound = .defaultCritical
-        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
+        content.badge = 1
         
         let trigger = UNCalendarNotificationTrigger(
             dateMatching: Calendar.current.dateComponents(
@@ -146,7 +144,7 @@ class NotificationManager: NSObject, ObservableObject {
         content.body = "Faktura \(invoice.number) från \(invoice.client.name) har markerats som betald"
         content.categoryIdentifier = "INVOICE_PAID"
         content.sound = .default
-        content.badge = NSNumber(value: UIApplication.shared.applicationIconBadgeNumber + 1)
+        content.badge = 1
         
         let request = UNNotificationRequest(
             identifier: "paid_\(invoice.id.uuidString)",

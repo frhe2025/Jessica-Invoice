@@ -175,7 +175,7 @@ class PDFGenerator: ObservableObject {
         
         // Items table
         currentY -= 40
-        let tableStartY = currentY
+        _ = currentY
         
         // Table headers
         let col1X: CGFloat = margin

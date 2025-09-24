@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "553AEE9B-06F2-455C-994E-3D7823D6F2F8"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
+         <BreakpointContent
+            uuid = "886B4266-8B66-474C-96A1-4D23A3F30CF3"
+            shouldBeEnabled = "Yes"
+            nameForDebugger = "Run1"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            breakpointStackSelectionBehavior = "1"
+            scope = "1"
+            stopOnStyle = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "1F2B37AB-E733-4376-95E3-B57BA1672DF2"
+            shouldBeEnabled = "No"
+            nameForDebugger = "swift_willThrow"
+            ignoreCount = "0"
+            continueAfterRunningActions = "Yes"
+            symbolName = "swift_willThrow"
+            moduleName = "">
+            <Locations>
+               <Location
+                  uuid = "1F2B37AB-E733-4376-95E3-B57BA1672DF2 - f030214c10979e26"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "swift_willThrow"
+                  moduleName = "libswiftCore.dylib"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "7B5E9626-9852-455F-B723-8DB3F210CBBA"
+            shouldBeEnabled = "Yes"
+            condition = "swift_willFatalError"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = "swift_willFatalError"
+            moduleName = "">
+            <Locations>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "2237E5B5-89C0-4839-BA90-2ADC2E68034B"
+            shouldBeEnabled = "Yes"
+            condition = "Swift._assertionFailure"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = "Swift._assertionFailure"
+            moduleName = "">
+            <Locations>
+               <Location
+                  uuid = "2237E5B5-89C0-4839-BA90-2ADC2E68034B - 84176f8c87a11fa9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Swift._assertionFailure(_: Swift.StaticString, _: Swift.StaticString, file: Swift.StaticString, line: Swift.UInt, flags: Swift.UInt32) -&gt; Swift.Never"
+                  moduleName = "libswiftCore.dylib"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "2237E5B5-89C0-4839-BA90-2ADC2E68034B - 30119614d8f223f9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Swift._assertionFailure(_: Swift.StaticString, _: Swift.String, file: Swift.StaticString, line: Swift.UInt, flags: Swift.UInt32) -&gt; Swift.Never"
+                  moduleName = "libswiftCore.dylib"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "2237E5B5-89C0-4839-BA90-2ADC2E68034B - 1ac6c1f204d425a7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Swift._assertionFailure(_: Swift.StaticString, _: Swift.String, flags: Swift.UInt32) -&gt; Swift.Never"
+                  moduleName = "libswiftCore.dylib"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4"
+            shouldBeEnabled = "Yes"
+            condition = "fatalError"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = "fatalError"
+            moduleName = "">
+            <Locations>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - d706d7fa28a3c26f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "swift::fatalError(unsigned int, char const*, ...)"
+                  moduleName = "libswiftCore.dylib"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - ca6694a842a331bb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Swift.fatalError(_: @autoclosure () -&gt; Swift.String, file: Swift.StaticString, line: Swift.UInt) -&gt; Swift.Never"
+                  moduleName = "libswiftCore.dylib"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - d572b9a0ba57e34d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RGSiriSchemaRGCacheManagerCallFailed fatalError]"
+                  moduleName = "SiriInstrumentation"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - ea62ece6baf6a3a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RGSiriSchemaRGCatalogFailed fatalError]"
+                  moduleName = "SiriInstrumentation"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - f4f3d290430546fc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RGSiriSchemaRGGMSCallFailed fatalError]"
+                  moduleName = "SiriInstrumentation"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - 5af0c537984b9e66"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RGSiriSchemaRGHallucinationDetectionFailed fatalError]"
+                  moduleName = "SiriInstrumentation"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - 1688e98481876ce"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RGSiriSchemaRGInferenceFailed fatalError]"
+                  moduleName = "SiriInstrumentation"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - 9aa01c429c6f1f1e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RGSiriSchemaRGOverrideFailed fatalError]"
+                  moduleName = "SiriInstrumentation"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+               <Location
+                  uuid = "92F402E5-4912-43B7-AF49-20F4C8AC6BB4 - 95aa9e5b029a2553"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RGSiriSchemaRGValidationFailed fatalError]"
+                  moduleName = "SiriInstrumentation"
+                  usesParentBreakpointCondition = "Yes">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.ExceptionBreakpoint">
+         <BreakpointContent
+            uuid = "1C1C4EBA-E861-42FE-A146-9D84A5E49506"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            breakpointStackSelectionBehavior = "1"
+            scope = "0"
+            stopOnStyle = "0">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

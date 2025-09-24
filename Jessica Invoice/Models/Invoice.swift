@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Invoice Model
 struct Invoice: Identifiable, Codable, Hashable, Equatable {
-    let id = UUID()
+    var id: UUID = UUID()
     var companyId: UUID?
     var number: String
     var date: Date
@@ -74,7 +74,7 @@ struct Invoice: Identifiable, Codable, Hashable, Equatable {
 }
 
 struct Client: Identifiable, Codable, Hashable {
-    let id = UUID()
+    var id: UUID = UUID()
     var name: String
     var contactPerson: String
     var email: String
@@ -103,7 +103,7 @@ struct Client: Identifiable, Codable, Hashable {
 }
 
 struct InvoiceItem: Identifiable, Codable, Hashable {
-    let id = UUID()
+    var id: UUID = UUID()
     var description: String
     var quantity: Double
     var unit: String

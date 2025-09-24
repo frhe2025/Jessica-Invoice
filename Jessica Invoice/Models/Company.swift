@@ -9,7 +9,7 @@
 import Foundation
 
 struct Company: Identifiable, Codable {
-    let id = UUID()
+    var id: UUID = UUID()
     var name: String
     var organizationNumber: String
     var vatNumber: String

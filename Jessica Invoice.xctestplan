@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "14A6CA40-0C72-4CB0-B4EE-DB86953B933A",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Jessica Invoice.xcodeproj",
+      "identifier" : "187C2A912E75CB460021A48F",
+      "name" : "Jessica Invoice"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Jessica Invoice.xcodeproj",
+        "identifier" : "187C2A9E2E75CB4A0021A48F",
+        "name" : "Jessica InvoiceTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Jessica Invoice.xcodeproj",
+        "identifier" : "187C2AA82E75CB4A0021A48F",
+        "name" : "Jessica InvoiceUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
