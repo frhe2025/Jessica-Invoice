@@ -174,7 +174,7 @@ struct CategoryFilterPill: View {
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? .green.opacity(0.2) : .ultraThinMaterial)
+                        .fill(isSelected ? AnyShapeStyle(Color.green.opacity(0.2)) : AnyShapeStyle(.ultraThinMaterial))
                         .stroke(isSelected ? .green.opacity(0.3) : .clear, lineWidth: 1)
                 )
                 .foregroundStyle(isSelected ? .green : .primary)
@@ -258,7 +258,7 @@ struct ProductPickerRow: View {
         .listRowSeparator(.hidden)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isSelected ? .green.opacity(0.05) : .ultraThinMaterial)
+                .fill(isSelected ? AnyShapeStyle(Color.green.opacity(0.05)) : AnyShapeStyle(.ultraThinMaterial))
                 .stroke(isSelected ? .green.opacity(0.2) : .clear, lineWidth: 1)
         )
         .padding(.horizontal, 16)

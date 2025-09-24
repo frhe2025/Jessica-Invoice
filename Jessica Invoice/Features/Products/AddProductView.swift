@@ -143,7 +143,10 @@ struct ProductTemplateSection: View {
                                     .multilineTextAlignment(.center)
                             }
                             .padding(12)
-                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.ultraThinMaterial)
+                            )
                         }
                         .buttonStyle(ScaleButtonStyle())
                     }
@@ -192,7 +195,10 @@ struct ProductBasicInfoSection: View {
                         .lineLimit(2...4)
                         .textFieldStyle(.plain)
                         .padding(12)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.ultraThinMaterial)
+                        )
                     }
                 }
             }
@@ -223,7 +229,10 @@ struct ProductPricingSection: View {
                             .keyboardType(.decimalPad)
                             .textFieldStyle(.plain)
                             .padding(12)
-                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.ultraThinMaterial)
+                            )
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -248,7 +257,10 @@ struct ProductPricingSection: View {
                                     .foregroundStyle(.secondary)
                             }
                             .padding(12)
-                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.ultraThinMaterial)
+                            )
                         }
                     }
                 }
@@ -369,7 +381,7 @@ struct CategorySelectionCard: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.categoryColor(for: category) : .ultraThinMaterial)
+                    .fill(isSelected ? AnyShapeStyle(Color.categoryColor(for: category)) : AnyShapeStyle(.ultraThinMaterial))
                     .stroke(isSelected ? .clear : Color.categoryColor(for: category).opacity(0.3), lineWidth: 1)
             )
         }
@@ -411,7 +423,10 @@ struct ProductAdvancedSection: View {
                             .foregroundStyle(.secondary)
                     }
                     .padding(12)
-                    .background(.orange.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.orange.opacity(0.05))
+                    )
                 }
             }
             .padding(20)

@@ -1,3 +1,4 @@
+#if false
 //
 //  Date+Extensions.swift
 //  Jessica Invoice
@@ -525,3 +526,4 @@ extension Date {
         return "\(day) \(swedishMonthName) \(year)"
     }
 }
+#endif

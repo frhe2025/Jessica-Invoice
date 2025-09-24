@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		18FF0F3C2E7C610C00895205 /* CompanyDataSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF0F3B2E7C610C00895205 /* CompanyDataSummary.swift */; };
 		18FF0F3E2E7C63BA00895205 /* UIStubs+Liquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF0F3D2E7C63BA00895205 /* UIStubs+Liquid.swift */; };
-		18FF0F402E7C647300895205 /* PDFGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FF0F3F2E7C647300895205 /* PDFGenerator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,9 +38,22 @@
 		18FF0F3F2E7C647300895205 /* PDFGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFGenerator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		18FF0F412E7DAE2500895205 /* Exceptions for "Jessica Invoice" folder in "Jessica Invoice" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"ViewModels/Date+Extensions.swift",
+			);
+			target = 187C2A912E75CB460021A48F /* Jessica Invoice */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		187C2A942E75CB460021A48F /* Jessica Invoice */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				18FF0F412E7DAE2500895205 /* Exceptions for "Jessica Invoice" folder in "Jessica Invoice" target */,
+			);
 			path = "Jessica Invoice";
 			sourceTree = "<group>";
 		};
@@ -252,7 +264,6 @@
 			files = (
 				18FF0F3C2E7C610C00895205 /* CompanyDataSummary.swift in Sources */,
 				18FF0F3E2E7C63BA00895205 /* UIStubs+Liquid.swift in Sources */,
-				18FF0F402E7C647300895205 /* PDFGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

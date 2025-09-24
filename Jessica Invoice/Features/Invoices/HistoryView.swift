@@ -314,7 +314,7 @@ struct StatusPill: View {
                                 )
                         } else {
                             RoundedRectangle(cornerRadius: 20)
-                                .fill(.ultraThinMaterial)
+                                .fill(AnyShapeStyle(.ultraThinMaterial))
                         }
                     }
                 )
@@ -348,7 +348,7 @@ struct DateRangePill: View {
                                 )
                         } else {
                             RoundedRectangle(cornerRadius: 20)
-                                .fill(.ultraThinMaterial)
+                                .fill(AnyShapeStyle(.ultraThinMaterial))
                         }
                     }
                 )

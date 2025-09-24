@@ -151,24 +151,24 @@ enum LiquidDepth {
 
 // MARK: - Convenience Initializers
 extension LiquidGlassCard {
-    static func minimal<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
-        LiquidGlassCard<ViewContent>(style: .minimal, depth: .subtle, content: content)
+    static func minimal(@ViewBuilder content: () -> Content) -> Self {
+        Self(style: .minimal, depth: .subtle, content: content)
     }
     
-    static func adaptive<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
-        LiquidGlassCard<ViewContent>(style: .adaptive, depth: .medium, content: content)
+    static func adaptive(@ViewBuilder content: () -> Content) -> Self {
+        Self(style: .adaptive, depth: .medium, content: content)
     }
     
-    static func prominent<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
-        LiquidGlassCard<ViewContent>(style: .prominent, depth: .deep, content: content)
+    static func prominent(@ViewBuilder content: () -> Content) -> Self {
+        Self(style: .prominent, depth: .deep, content: content)
     }
     
-    static func floating<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
-        LiquidGlassCard<ViewContent>(style: .floating, depth: .floating, content: content)
+    static func floating(@ViewBuilder content: () -> Content) -> Self {
+        Self(style: .floating, depth: .floating, content: content)
     }
     
-    static func interactive<ViewContent: View>(@ViewBuilder content: @escaping () -> ViewContent) -> LiquidGlassCard<ViewContent> {
-        LiquidGlassCard<ViewContent>(style: .interactive, depth: .medium, content: content)
+    static func interactive(@ViewBuilder content: () -> Content) -> Self {
+        Self(style: .interactive, depth: .medium, content: content)
     }
 }
 
@@ -227,4 +227,3 @@ extension LiquidGlassCard {
     }
     .background(.gray.opacity(0.1))
 }
-

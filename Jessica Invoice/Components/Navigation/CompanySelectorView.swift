@@ -696,7 +696,14 @@ struct LiquidToggleStyle: ToggleStyle {
             Spacer()
             
             RoundedRectangle(cornerRadius: 16)
-                .fill(configuration.isOn ? .blue.gradient : .gray.opacity(0.3))
+                .fill(configuration.isOn
+                      ? LinearGradient(colors: [.blue, .cyan],
+                                       startPoint: .topLeading,
+                                       endPoint: .bottomTrailing)
+                      : LinearGradient(colors: [Color.gray.opacity(0.35),
+                                                Color.gray.opacity(0.15)],
+                                       startPoint: .top,
+                                       endPoint: .bottom))
                 .frame(width: 44, height: 26)
                 .overlay(
                     Circle()

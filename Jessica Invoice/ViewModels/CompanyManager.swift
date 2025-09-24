@@ -300,7 +300,7 @@ class CompanyManager: ObservableObject {
         // Payment trends insight
         let thisMonthPaid = invoices.filter { $0.status == .paid && $0.date.isThisMonth }.count
         let lastMonthPaid = invoices.filter {
-            $0.status == .paid && Calendar.current.isDate($0.date, equalTo: Date().adding(months: -1), toGranularity: .month)
+            $0.status == .paid && Calendar.current.isDate($0.date, equalTo: (Date().adding(.month, value: -1) ?? Date()), toGranularity: .month)
         }.count
         
         if thisMonthPaid > lastMonthPaid {
@@ -556,15 +556,15 @@ enum TimeFrame: CaseIterable {
         let now = Date()
         switch self {
         case .week:
-            return now.startOfWeek...now.endOfWeek
+            return now.startOfWeek()...now.endOfWeek()
         case .month:
-            return now.startOfMonth...now.endOfMonth
+            return now.startOfMonth()...now.endOfMonth()
         case .quarter:
-            let startOfQuarter = Calendar.current.dateInterval(of: .quarter, for: now)?.start ?? now.startOfYear
-            let endOfQuarter = Calendar.current.dateInterval(of: .quarter, for: now)?.end ?? now.endOfYear
+            let startOfQuarter = Calendar.current.dateInterval(of: .quarter, for: now)?.start ?? now.startOfYear()
+            let endOfQuarter = Calendar.current.dateInterval(of: .quarter, for: now)?.end ?? now.endOfYear()
             return startOfQuarter...endOfQuarter
         case .year:
-            return now.startOfYear...now.endOfYear
+            return now.startOfYear()...now.endOfYear()
         }
     }
     

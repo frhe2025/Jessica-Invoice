@@ -21,9 +21,10 @@ class PDFGenerator: ObservableObject {
         
         // Create PDF context
         let pdfData = NSMutableData()
+        var mediaBox = CGRect(x: 0, y: 0, width: 595, height: 842)
         let pdfContext = CGContext(
             consumer: CGDataConsumer(data: pdfData)!,
-            mediaBox: &CGRect(x: 0, y: 0, width: 595, height: 842), // A4 size
+            mediaBox: &mediaBox,
             nil
         )!
         
@@ -317,9 +318,10 @@ class PDFGenerator: ObservableObject {
     // MARK: - Export Options
     func generateMultipleInvoicesPDF(_ invoices: [Invoice]) async throws -> Data {
         let pdfData = NSMutableData()
+        var mediaBox = CGRect(x: 0, y: 0, width: 595, height: 842)
         let pdfContext = CGContext(
             consumer: CGDataConsumer(data: pdfData)!,
-            mediaBox: &CGRect(x: 0, y: 0, width: 595, height: 842),
+            mediaBox: &mediaBox,
             nil
         )!
         
@@ -350,3 +352,4 @@ extension DateFormatter {
         return formatter
     }()
 }
+

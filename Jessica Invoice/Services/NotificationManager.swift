@@ -248,24 +248,22 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        let notificationId = response.notification.request.identifier
+        let actionId = response.actionIdentifier
         Task { @MainActor in
-            await handleNotificationResponse(response)
+            await handleNotificationResponse(notificationId: notificationId, actionIdentifier: actionId)
         }
         completionHandler()
     }
     
-    private func handleNotificationResponse(_ response: UNNotificationResponse) async {
-        let identifier = response.notification.request.identifier
-        let actionIdentifier = response.actionIdentifier
-        
+    @MainActor private func handleNotificationResponse(notificationId: String, actionIdentifier: String) async {
         switch actionIdentifier {
         case "VIEW_INVOICE":
-            await handleViewInvoiceAction(notificationId: identifier)
+            await handleViewInvoiceAction(notificationId: notificationId)
         case "MARK_PAID":
-            await handleMarkPaidAction(notificationId: identifier)
+            await handleMarkPaidAction(notificationId: notificationId)
         case UNNotificationDefaultActionIdentifier:
-            // User tapped the notification
-            await handleDefaultAction(notificationId: identifier)
+            await handleDefaultAction(notificationId: notificationId)
         default:
             break
         }
@@ -333,3 +331,4 @@ extension Invoice {
     }
 }
 #endif
+

@@ -370,7 +370,10 @@ struct InvoiceDetailsSection: View {
                                     .foregroundStyle(.secondary)
                             }
                             .padding(12)
-                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.ultraThinMaterial)
+                            )
                         }
                     }
                 }
@@ -384,7 +387,10 @@ struct InvoiceDetailsSection: View {
                     Text(invoice.dueDate.displayFormat)
                         .font(.subheadline)
                         .padding(12)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(.ultraThinMaterial)
+                        )
                 }
             }
             .padding(20)
@@ -498,7 +504,10 @@ struct InvoiceItemRow: View {
                         .keyboardType(.decimalPad)
                         .textFieldStyle(.plain)
                         .padding(8)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(.ultraThinMaterial)
+                        )
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -509,7 +518,10 @@ struct InvoiceItemRow: View {
                     TextField("st", text: $item.unit)
                         .textFieldStyle(.plain)
                         .padding(8)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(.ultraThinMaterial)
+                        )
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -521,7 +533,10 @@ struct InvoiceItemRow: View {
                         .keyboardType(.decimalPad)
                         .textFieldStyle(.plain)
                         .padding(8)
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(.ultraThinMaterial)
+                        )
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -534,7 +549,10 @@ struct InvoiceItemRow: View {
                         .fontWeight(.semibold)
                         .foregroundStyle(.green)
                         .padding(8)
-                        .background(.green.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(.ultraThinMaterial)
+                        )
                 }
             }
         }
@@ -647,7 +665,10 @@ struct InvoiceNotesSection: View {
                 .lineLimit(3...6)
                 .textFieldStyle(.plain)
                 .padding(12)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.ultraThinMaterial)
+                )
             }
             .padding(20)
         }

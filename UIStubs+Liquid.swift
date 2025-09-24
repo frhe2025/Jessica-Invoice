@@ -1,8 +1,11 @@
 import SwiftUI
 
-// MARK: - LiquidGlassBackground
+// NOTE: Fallback stub implementations renamed to avoid conflicts with real implementations.
+// These are simple no-op or basic fallbacks with slightly different names.
 
-public struct LiquidGlassBackground: View {
+// MARK: - LiquidGlassBackgroundStub
+
+public struct LiquidGlassBackgroundStub: View {
     private let colors: [Color]
     private let intensity: Double
     private let isAnimated: Bool
@@ -24,9 +27,9 @@ public struct LiquidGlassBackground: View {
     }
 }
 
-// MARK: - LiquidCard
+// MARK: - LiquidCardStub
 
-public struct LiquidCard<Content: View>: View {
+public struct LiquidCardStub<Content: View>: View {
     public enum Style {
         case primary
         case subtle
@@ -51,9 +54,9 @@ public struct LiquidCard<Content: View>: View {
     }
 }
 
-// MARK: - LiquidGlassCard
+// MARK: - LiquidGlassCardStub
 
-public struct LiquidGlassCard<Content: View>: View {
+public struct LiquidGlassCardStub<Content: View>: View {
     public enum Style {
         case minimal
         case adaptive
@@ -101,18 +104,18 @@ public struct LiquidGlassCard<Content: View>: View {
     }
 
     // Static factories
-    public static func adaptive<Content: View>(@ViewBuilder content: () -> Content) -> LiquidGlassCard<Content> {
-        LiquidGlassCard(style: .adaptive, depth: .medium, adaptiveColor: true, content: content)
+    public static func adaptive<C: View>(@ViewBuilder content: () -> C) -> LiquidGlassCardStub<C> {
+        LiquidGlassCardStub<C>(style: .adaptive, depth: .medium, adaptiveColor: true, content: content)
     }
 
-    public static func prominent<Content: View>(@ViewBuilder content: () -> Content) -> LiquidGlassCard<Content> {
-        LiquidGlassCard(style: .prominent, depth: .deep, adaptiveColor: true, content: content)
+    public static func prominent<C: View>(@ViewBuilder content: () -> C) -> LiquidGlassCardStub<C> {
+        LiquidGlassCardStub<C>(style: .prominent, depth: .deep, adaptiveColor: true, content: content)
     }
 }
 
-// MARK: - ContextualLiquidBackground
+// MARK: - ContextualLiquidBackgroundStub
 
-public struct ContextualLiquidBackground: View {
+public struct ContextualLiquidBackgroundStub: View {
     public enum BackgroundContext {
         case invoice
         case products
@@ -269,13 +272,5 @@ public extension View {
 
 // MARK: - Helper extensions
 
-private extension View {
-    @ViewBuilder
-    func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
-        if condition {
-            transform(self)
-        } else {
-            self
-        }
-    }
-}
+// Removed private extension View with custom `if` modifier to avoid redeclaration issues.
+

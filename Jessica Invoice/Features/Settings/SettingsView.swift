@@ -245,7 +245,10 @@ struct SettingsField: View {
             TextField("", text: $text)
                 .textFieldStyle(.plain)
                 .padding(EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12))
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.ultraThinMaterial)
+                )
         }
     }
 }
@@ -290,7 +293,10 @@ struct SettingsPicker<T: Hashable>: View {
                         .foregroundStyle(.secondary)
                 }
                 .padding(EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12))
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.ultraThinMaterial)
+                )
             }
         }
     }
@@ -336,7 +342,10 @@ struct SettingsToggle: View {
                 .tint(.purple)
         }
         .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+        )
     }
 }
 
@@ -384,7 +393,10 @@ struct SettingsButton: View {
                     .foregroundStyle(.tertiary)
             }
             .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+            )
         }
         .buttonStyle(ScaleButtonStyle())
     }

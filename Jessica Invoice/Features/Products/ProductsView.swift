@@ -101,7 +101,10 @@ struct ProductsView: View {
                                     }
                                 }
                                 .padding(12)
-                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(.ultraThinMaterial)
+                                )
                                 
                                 if showingFilterOptions {
                                     ScrollView(.horizontal, showsIndicators: false) {
@@ -252,7 +255,7 @@ struct CategoryPill: View {
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? .green.opacity(0.2) : .ultraThinMaterial)
+                        .fill(isSelected ? AnyShapeStyle(Color.green.opacity(0.2)) : AnyShapeStyle(.ultraThinMaterial))
                         .stroke(isSelected ? .green.opacity(0.3) : .clear, lineWidth: 1)
                 )
                 .foregroundStyle(isSelected ? .green : .primary)

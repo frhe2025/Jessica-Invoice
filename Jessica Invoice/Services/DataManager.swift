@@ -224,16 +224,16 @@ class DataManager: ObservableObject {
     }
     
     func availableBackups() -> [BackupInfo] {
-        guard let contents = try? fileManager.contentsOfDirectory(at: backupDirectory, includingPropertiesForKeys: [.fileSizeKey, .modificationDateKey]) else {
+        guard let contents = try? fileManager.contentsOfDirectory(at: backupDirectory, includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey]) else {
             return []
         }
         
         return contents
             .filter { $0.pathExtension == "backup" }
             .compactMap { url in
-                guard let resources = try? url.resourceValues(forKeys: [.fileSizeKey, .modificationDateKey]),
+                guard let resources = try? url.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey]),
                       let size = resources.fileSize,
-                      let date = resources.modificationDate else {
+                      let date = resources.contentModificationDate else {
                     return nil
                 }
                 
@@ -295,14 +295,6 @@ class DataManager: ObservableObject {
 }
 
 // MARK: - Supporting Data Structures
-struct CompanyDataSummary: Codable {
-    let companyId: UUID
-    let invoiceCount: Int
-    let productCount: Int
-    let totalInvoiced: Double
-    let lastActivity: Date
-}
-
 struct CompanyBackupData: Codable {
     let company: Company
     let invoices: [Invoice]
